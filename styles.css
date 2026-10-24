@@ -61,9 +61,12 @@ body {
   justify-content: center;
   position: relative;
   overflow-x: hidden;
-  padding: 2rem 1.25rem;
+  padding: max(1.5rem, env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+  touch-action: manipulation;
 }
 
 /* Ambient Background & Glow Effects */
@@ -2434,5 +2437,85 @@ body {
   background-color: #f43f5e;
   box-shadow: 0 0 8px #f43f5e;
 }
+
+/* ==========================================================================
+   ANDROID NATIVE UI/UX & MOBILE BOTTOM SHEET STYLING
+   ========================================================================== */
+
+/* Universal Android Touch Highlight & Feedback */
+button, input, select, textarea, a, .tab-btn, .demo-pill-btn, .quick-merchant-chip, .sim-preset-btn {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button:active, .btn-primary-cta:active, .demo-pill-btn:active, .switch-pill-btn:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Android Native Bottom Sheet Modal on Mobile Screens (< 640px) */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-box {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-bottom: none;
+    padding: 1.75rem 1.25rem max(1.5rem, env(safe-area-inset-bottom));
+    animation: slideUpAndroidSheet 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Bottom sheet grab handle */
+  .modal-box::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Full-width sticky actions for mobile thumb accessibility */
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .modal-actions .btn-secondary,
+  .modal-actions .btn-primary-cta {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  /* Compact Navbar for Android Small Devices */
+  .dashboard-navbar {
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@keyframes slideUpAndroidSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 
 

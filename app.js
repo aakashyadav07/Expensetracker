@@ -41,6 +41,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ==========================================================================
+     ANDROID HAPTIC FEEDBACK & TOUCH INTERACTION
+     ========================================================================== */
+  function triggerHaptic(duration = 20) {
+    if ('vibrate' in navigator) {
+      try {
+        navigator.vibrate(duration);
+      } catch (e) {}
+    }
+  }
+
+  // Global Android micro-haptic feedback on touchable elements
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('button, .merchant-pill, .switch-pill-btn, .debt-tab-btn, .filter-type-btn, .tx-toggle-btn')) {
+      triggerHaptic(15);
+    }
+  });
+
   // Initialize Database with pre-seeded rich accounts containing debts & transactions
   function initDatabase() {
     let users = JSON.parse(localStorage.getItem(DB_KEY) || 'null');
@@ -236,8 +254,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const qrNoteDisplay = document.getElementById('qr-note-display');
   const btnWhatsappShare = document.getElementById('btn-whatsapp-share');
   const btnFinishP2p = document.getElementById('btn-finish-p2p');
+  const btnUpiAppDirect = document.getElementById('btn-upi-app-direct');
   let currentP2pType = 'owed_to_me';
   let activeGeneratedWhatsappUrl = '';
+  let activeGeneratedUpiUri = '';
+  let activeFriendName = '';
+  let activeAmountFormatted = '';
+  let activeNote = '';
 
   // Add Transaction Modal
   const btnOpenTxModal = document.getElementById('btn-open-tx-modal');
@@ -1219,6 +1242,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Generate UPI Intent String
     const myUpiId = `${user.name.toLowerCase().replace(/\s+/g, '')}@okaxis`;
     const upiUri = `upi://pay?pa=${encodeURIComponent(myUpiId)}&pn=${encodeURIComponent(user.name)}&am=${amt.toFixed(2)}&cu=INR&tn=${encodeURIComponent(note)}`;
+    activeGeneratedUpiUri = upiUri;
+    activeFriendName = friendName;
+    activeAmountFormatted = formatRupee(amt);
+    activeNote = note;
 
     // Generate high resolution scannable QR Code using QR Server API with custom SVG fallback
     qrAmountDisplay.textContent = formatRupee(amt);
@@ -1239,11 +1266,41 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Record Created', `Recorded debt entry for ${friendName}. Live UPI QR is ready!`, 'success');
   });
 
-  btnWhatsappShare.addEventListener('click', () => {
-    if (activeGeneratedWhatsappUrl) {
-      window.open(activeGeneratedWhatsappUrl, '_blank');
-    }
-  });
+  // Direct Android UPI App Launcher (Google Pay, PhonePe, Paytm, BHIM)
+  if (btnUpiAppDirect) {
+    btnUpiAppDirect.addEventListener('click', () => {
+      triggerHaptic(25);
+      if (activeGeneratedUpiUri) {
+        showToast('Launching UPI App', 'Opening Google Pay, PhonePe, Paytm or BHIM...', 'info');
+        window.location.href = activeGeneratedUpiUri;
+      } else {
+        showToast('UPI Link Missing', 'Please generate a valid payment request first.', 'error');
+      }
+    });
+  }
+
+  // Native Android Web Share API with WhatsApp fallback
+  if (btnWhatsappShare) {
+    btnWhatsappShare.addEventListener('click', async () => {
+      triggerHaptic(20);
+      if (navigator.share && activeGeneratedUpiUri) {
+        try {
+          await navigator.share({
+            title: 'Expense Tracker UPI Request',
+            text: `Hi ${activeFriendName || 'Friend'}! Please pay ${activeAmountFormatted || ''} for "${activeNote || 'Split Expense'}" using this UPI link:`,
+            url: activeGeneratedUpiUri
+          });
+          showToast('Request Shared', 'Sent via native Android share sheet.', 'success');
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return; // User cancelled Android share sheet
+        }
+      }
+      if (activeGeneratedWhatsappUrl) {
+        window.open(activeGeneratedWhatsappUrl, '_blank');
+      }
+    });
+  }
 
   /* --------------------------------------------------------------------------
      TRANSACTION EDITING & DELETION ENGINE
@@ -2239,4 +2296,79 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     });
   }
+
+  /* ==========================================================================
+     ANDROID HARDWARE/GESTURE BACK BUTTON & APP SHORTCUTS
+     ========================================================================== */
+  function setupAndroidModalBackSupport() {
+    const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+    
+    // Automatically push state to browser history when any modal becomes visible
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target;
+          if (!target.classList.contains('hidden')) {
+            if (!window.history.state || !window.history.state.modalOpen) {
+              window.history.pushState({ modalOpen: true, modalId: target.id }, '');
+            }
+          }
+        }
+      });
+    });
+
+    modalBackdrops.forEach(modal => {
+      observer.observe(modal, { attributes: true });
+      
+      // Dismiss on backdrop touch for mobile native feel
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+          triggerHaptic(15);
+          if (window.history.state && window.history.state.modalOpen) {
+            window.history.back();
+          }
+        }
+      });
+    });
+
+    // Android Hardware/Gesture Back Button listener (dismisses modal instead of closing app)
+    window.addEventListener('popstate', (e) => {
+      const openModals = Array.from(document.querySelectorAll('.modal-backdrop:not(.hidden)'));
+      if (openModals.length > 0) {
+        const topModal = openModals[openModals.length - 1];
+        topModal.classList.add('hidden');
+        triggerHaptic(20);
+      } else if (notifDrawer && notifDrawer.classList.contains('active')) {
+        notifDrawer.classList.remove('active');
+        triggerHaptic(20);
+      }
+    });
+  }
+
+  function handleAndroidAppShortcuts() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shortcut = urlParams.get('shortcut');
+    if (!shortcut) return;
+
+    // Clean URL query without page reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    // Give dashboard time to settle
+    setTimeout(() => {
+      const activeEmail = localStorage.getItem(SESSION_KEY);
+      if (!activeEmail) return;
+
+      if (shortcut === 'scan-pay' && btnOpenScanPay) {
+        btnOpenScanPay.click();
+      } else if (shortcut === 'add-tx' && btnOpenTxModal) {
+        btnOpenTxModal.click();
+      } else if (shortcut === 'p2p' && btnOpenRequestMoney) {
+        btnOpenRequestMoney.click();
+      }
+    }, 450);
+  }
+
+  setupAndroidModalBackSupport();
+  handleAndroidAppShortcuts();
 });

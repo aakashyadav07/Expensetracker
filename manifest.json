@@ -1,22 +1,70 @@
 {
+  "id": "io.expensetracker.app",
   "name": "Expense Tracker — Smart Multi-Persona Finance & P2P UPI",
   "short_name": "ExpenseTracker",
   "description": "Next-generation personal finance, P2P money requests, smart debt return alerts, and customized interfaces in Indian Rupees (₹).",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#080c14",
   "theme_color": "#10b981",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "productivity", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'%3E%3Crect width='512' height='512' rx='128' fill='%230f172a'/%3E%3Cpath d='M140 100h232M140 190h232M140 280l165 150M140 280h60M200 280c130 0 130-180 0-180' stroke='%2310b981' stroke-width='40' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'%3E%3Crect width='512' height='512' rx='128' fill='%230f172a'/%3E%3Cpath d='M140 100h232M140 190h232M140 280l165 150M140 280h60M200 280c130 0 130-180 0-180' stroke='%2310b981' stroke-width='40' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Scan & Pay UPI",
+      "short_name": "Scan & Pay",
+      "description": "Simulate UPI payment or QR code scan",
+      "url": "/#scan-pay",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96' fill='%2310b981'%3E%3Crect width='96' height='96' rx='24' fill='%230f172a'/%3E%3Cpath d='M20 30V20h10M66 20h10v10M76 66v10H66M30 76H20V66' stroke='%2310b981' stroke-width='8' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Add Expense",
+      "short_name": "Add Entry",
+      "description": "Record a new expense or income transaction",
+      "url": "/#add-entry",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96' fill='%2310b981'%3E%3Crect width='96' height='96' rx='24' fill='%230f172a'/%3E%3Cpath d='M48 24v48M24 48h48' stroke='%2310b981' stroke-width='8' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "P2P Money Request",
+      "short_name": "Request Money",
+      "description": "Generate UPI QR code to collect pending debts",
+      "url": "/#p2p-request",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96' fill='%2310b981'%3E%3Crect width='96' height='96' rx='24' fill='%230f172a'/%3E%3Cpath d='M20 32h56v40H20z' stroke='%2310b981' stroke-width='8' fill='none'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
     }
   ]
 }
