@@ -663,6 +663,69 @@
         </div>
       </section>
     </main>
+
+    <!-- =========================================================================
+         ANDROID NATIVE MOBILE BOTTOM APP BAR / NAVIGATION
+         ========================================================================= -->
+    <nav class="android-bottom-nav" id="android-bottom-nav" aria-label="Android Mobile Navigation">
+      <button type="button" class="bottom-nav-item active" id="bnav-home" data-target="home" title="Dashboard Home">
+        <div class="bnav-icon-wrap">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <span class="bnav-label">Home</span>
+      </button>
+
+      <button type="button" class="bottom-nav-item" id="bnav-khaata" data-target="khaata" title="P2P Khaata & UPI QR">
+        <div class="bnav-icon-wrap">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <span class="bnav-label">Khaata</span>
+      </button>
+
+      <!-- Prominent Elevated Center Floating Action Button (FAB) for UPI Scan & Pay -->
+      <button type="button" class="bottom-nav-fab" id="bnav-scan-pay" aria-label="Scan UPI QR Code" title="Scan & Pay UPI">
+        <div class="bnav-fab-inner">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path>
+            <rect x="7" y="7" width="10" height="10" rx="1"></rect>
+          </svg>
+        </div>
+        <span class="bnav-fab-label">Scan & Pay</span>
+      </button>
+
+      <button type="button" class="bottom-nav-item" id="bnav-ledger" data-target="ledger" title="Live Transactions Ledger">
+        <div class="bnav-icon-wrap">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </div>
+        <span class="bnav-label">Ledger</span>
+      </button>
+
+      <button type="button" class="bottom-nav-item" id="bnav-sync" data-target="sync" title="Bank & UPI Notification Auto-Sync">
+        <div class="bnav-icon-wrap">
+          <span class="bnav-pulse-dot"></span>
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.93 4.93a10 10 0 0 1 14.14 0M1.39 1.39a15 15 0 0 1 21.22 0M8.46 8.46a5 5 0 0 1 7.08 0"></path>
+            <circle cx="12" cy="12" r="1"></circle>
+          </svg>
+        </div>
+        <span class="bnav-label">Auto-Sync</span>
+      </button>
+    </nav>
   </div>
 
   <!-- =========================================================================

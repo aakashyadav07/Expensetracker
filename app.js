@@ -2369,6 +2369,89 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 450);
   }
 
+  /* ==========================================================================
+     ANDROID MOBILE BOTTOM NAVIGATION BAR CONTROLLER
+     ========================================================================== */
+  function setupAndroidBottomNav() {
+    const bnavHome = document.getElementById('bnav-home');
+    const bnavKhaata = document.getElementById('bnav-khaata');
+    const bnavScanPay = document.getElementById('bnav-scan-pay');
+    const bnavLedger = document.getElementById('bnav-ledger');
+    const bnavSync = document.getElementById('bnav-sync');
+    const allNavItems = document.querySelectorAll('.bottom-nav-item');
+
+    function setActiveNavItem(targetBtn) {
+      allNavItems.forEach(item => item.classList.remove('active'));
+      if (targetBtn) targetBtn.classList.add('active');
+    }
+
+    if (bnavHome) {
+      bnavHome.addEventListener('click', () => {
+        triggerHaptic(15);
+        setActiveNavItem(bnavHome);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    if (bnavKhaata) {
+      bnavKhaata.addEventListener('click', () => {
+        triggerHaptic(15);
+        setActiveNavItem(bnavKhaata);
+        const khaataSection = document.querySelector('.p2p-khaata-section');
+        if (khaataSection) {
+          khaataSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+
+    if (bnavScanPay) {
+      bnavScanPay.addEventListener('click', () => {
+        triggerHaptic(25);
+        if (btnOpenScanPay) btnOpenScanPay.click();
+      });
+    }
+
+    if (bnavLedger) {
+      bnavLedger.addEventListener('click', () => {
+        triggerHaptic(15);
+        setActiveNavItem(bnavLedger);
+        const ledgerSection = document.querySelector('.dash-transactions-section');
+        if (ledgerSection) {
+          ledgerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+
+    if (bnavSync) {
+      bnavSync.addEventListener('click', () => {
+        triggerHaptic(20);
+        setActiveNavItem(bnavSync);
+        if (btnOpenPermModal) {
+          btnOpenPermModal.click();
+        } else if (mandatoryNotifModal) {
+          mandatoryNotifModal.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Auto-update active tab on scroll
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY + 250;
+      const khaataSection = document.querySelector('.p2p-khaata-section');
+      const ledgerSection = document.querySelector('.dash-transactions-section');
+
+      if (ledgerSection && scrollPos >= ledgerSection.offsetTop) {
+        setActiveNavItem(bnavLedger);
+      } else if (khaataSection && scrollPos >= khaataSection.offsetTop) {
+        setActiveNavItem(bnavKhaata);
+      } else if (window.scrollY < 250) {
+        setActiveNavItem(bnavHome);
+      }
+    }, { passive: true });
+  }
+
   setupAndroidModalBackSupport();
   handleAndroidAppShortcuts();
+  setupAndroidBottomNav();
 });
+

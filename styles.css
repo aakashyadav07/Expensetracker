@@ -2453,6 +2453,381 @@ button:active, .btn-primary-cta:active, .demo-pill-btn:active, .switch-pill-btn:
   transition: transform 0.1s ease;
 }
 
+/* ==========================================================================
+   ANDROID NATIVE UI/UX & MOBILE BOTTOM SHEET STYLING
+   ========================================================================== */
+
+/* Universal Android Touch Highlight & Feedback */
+button, input, select, textarea, a, .tab-btn, .demo-pill-btn, .quick-merchant-chip, .sim-preset-btn, .bottom-nav-item, .bottom-nav-fab {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button:active, .btn-primary-cta:active, .demo-pill-btn:active, .switch-pill-btn:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Hidden by default on desktop/tablet */
+.android-bottom-nav {
+  display: none;
+}
+
+/* ==========================================================================
+   ANDROID MOBILE RESPONSIVE ENGINE (< 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* 1. Android Top App Bar */
+  .dashboard-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 950;
+    border-radius: 0 0 20px 20px;
+    padding: calc(0.6rem + env(safe-area-inset-top)) 1rem 0.75rem 1rem;
+    gap: 0.75rem;
+    background: rgba(10, 15, 29, 0.94);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Hide redundant desktop top buttons now prominently in Bottom App Bar */
+  .dashboard-navbar .btn-scan-pay-nav,
+  .dashboard-navbar .btn-notif-sync-nav {
+    display: none !important;
+  }
+
+  .navbar-brand {
+    order: 1;
+  }
+
+  .navbar-user-actions {
+    order: 2;
+    margin-left: auto;
+    gap: 0.5rem;
+  }
+
+  /* Horizontal Smooth Scrollable Persona Chip Bar */
+  .navbar-persona-switcher {
+    order: 3;
+    width: 100%;
+    margin-top: 0.15rem;
+    padding: 0.35rem 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.85);
+  }
+  .navbar-persona-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  .persona-switch-pills {
+    display: flex;
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .switch-pill-btn {
+    white-space: nowrap;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    min-height: 36px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  /* Pre-Payment Categorizer Toggle Row */
+  .pre-payment-toggle-pill {
+    order: 4;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.85rem;
+    background: rgba(15, 23, 42, 0.7);
+    border-radius: 12px;
+    margin-top: -0.2rem;
+  }
+  .toggle-pill-label {
+    font-size: 0.78rem;
+  }
+
+  /* User pill on mobile: Keep initials visible, hide verbose email text */
+  .user-pill {
+    padding: 0.25rem 0.45rem;
+  }
+  .user-pill-details {
+    display: none;
+  }
+  .btn-logout span,
+  .btn-install-app span {
+    display: none;
+  }
+  .btn-logout,
+  .btn-install-app {
+    padding: 0.55rem;
+    min-width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Notification drawer full width overlay on phone */
+  .notif-drawer {
+    position: fixed;
+    top: calc(75px + env(safe-area-inset-top));
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    z-index: 1050;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+  }
+
+  /* 2. Main Content Spacing & Grids */
+  .dashboard-main {
+    padding: 0.75rem 1rem calc(90px + env(safe-area-inset-bottom)) 1rem;
+    gap: 1.25rem;
+  }
+
+  .persona-banner {
+    padding: 1.15rem 1.25rem;
+    border-radius: 18px;
+  }
+  .persona-banner-title {
+    font-size: 1.2rem;
+  }
+
+  .dash-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .dash-stat-card {
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+  .stat-main-figure {
+    font-size: 1.95rem;
+  }
+
+  /* Tool Cards */
+  .dash-specialized-tool {
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+  .splitter-form-grid, .trade-calc-grid, .gst-calc-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .rule-bars-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* P2P Section & Actions */
+  .p2p-section-header, .dash-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .p2p-actions-row,
+  .p2p-actions-row .btn-primary-cta,
+  .dash-section-header .btn-primary-cta {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .debts-tabs-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .debt-tab-btn {
+    width: 100%;
+    justify-content: space-between;
+    min-height: 42px;
+  }
+
+  /* Ledger Search & Filter */
+  .ledger-filter-bar {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .filter-type-pills {
+    width: 100%;
+    display: flex;
+    gap: 0.35rem;
+  }
+  .filter-type-btn {
+    flex: 1;
+    text-align: center;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Bank Sync Status Bar */
+  .bank-sync-status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem;
+    margin: 0 1rem;
+  }
+  .sync-status-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .sync-status-actions .btn-simulate-notif {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+  }
+
+  /* 3. Android Native Bottom Navigation Bar */
+  .android-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(62px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(10, 15, 29, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.6);
+    z-index: 990;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    padding: 0.35rem 0;
+    gap: 0.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 52px;
+  }
+
+  .bottom-nav-item:active {
+    transform: scale(0.92);
+  }
+
+  .bottom-nav-item.active {
+    color: #10b981;
+  }
+
+  .bottom-nav-item.active .bnav-icon-wrap {
+    color: #10b981;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+  }
+
+  .bnav-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bnav-pulse-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+    animation: pulseLiveSync 2s infinite;
+  }
+
+  .bnav-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* Raised Floating Center Action Button (FAB) for Instant Scan & Pay */
+  .bottom-nav-fab {
+    position: relative;
+    top: -15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1000;
+  }
+
+  .bnav-fab-inner {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #10b981 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px -2px rgba(6, 182, 212, 0.55), 0 0 0 4px #0a0f1d;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .bottom-nav-fab:active .bnav-fab-inner {
+    transform: scale(0.9);
+  }
+
+  .bnav-fab-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-top: 0.25rem;
+  }
+
+  /* 4. Auth View Mobile Optimization */
+  .auth-glass-card {
+    padding: 1.65rem 1.15rem;
+    margin: 0.75rem auto;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 95vw;
+  }
+  .demo-buttons-group {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .social-login-group {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .social-auth-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+}
+
 /* Android Native Bottom Sheet Modal on Mobile Screens (< 640px) */
 @media (max-width: 640px) {
   .modal-backdrop {
@@ -2496,13 +2871,13 @@ button:active, .btn-primary-cta:active, .demo-pill-btn:active, .switch-pill-btn:
     width: 100%;
     padding: 0.85rem 1rem;
     font-size: 0.95rem;
+    min-height: 46px;
   }
 
-  /* Compact Navbar for Android Small Devices */
-  .dashboard-navbar {
-    flex-wrap: wrap;
-    gap: 0.65rem;
-    padding: 0.75rem 1rem;
+  /* Prevent auto-zoom on mobile inputs by keeping font-size >= 16px */
+  .form-input, .form-select {
+    font-size: 16px;
+    min-height: 48px;
   }
 }
 
@@ -2516,6 +2891,7 @@ button:active, .btn-primary-cta:active, .demo-pill-btn:active, .switch-pill-btn:
     opacity: 1;
   }
 }
+
 
 
 
