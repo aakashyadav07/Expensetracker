@@ -58,11 +58,62 @@ You can also directly open `index.html` in any modern web browser.
 
 ---
 
+## 📱 Android Compatibility & Native Features
+
+Expense Tracker is built to deliver a 100% native Android application experience:
+
+### 1. Progressive Web App (PWA) & Home Screen Installation
+- **Open in Chrome on Android**: Navigate to your app URL.
+- **Install App**: Tap the **"📱 Install App"** button in the header or tap Chrome's menu (`⋮`) -> **"Install app"** / **"Add to Home Screen"**.
+- Runs in standalone immersive full-screen with native Android status bar styling (`#0a0f1d`) and notch safe-area padding (`env(safe-area-inset-top)`).
+
+### 2. Android App Shortcuts (Launcher Quick Actions)
+Long-press the Expense Tracker app icon on your Android home screen to instantly access:
+- ⚡ **Scan & Pay (UPI)** (`/?shortcut=scan-pay`)
+- ➕ **Record Transaction** (`/?shortcut=add-tx`)
+- 🤝 **P2P Khaata & UPI QR** (`/?shortcut=p2p`)
+
+### 3. Android System Back-Button & Edge Gesture Support
+- Tapping the physical back button or swiping from either edge dismisses open modals (QR code, transaction dialogs, payment categorizer) instead of exiting the app.
+
+### 4. Direct Android UPI App Launcher (`upi://pay`)
+- When generating a P2P request or debt collection QR, tap **"⚡ Open in UPI App"** to fire Android's native intent chooser and open **Google Pay, PhonePe, Paytm, BHIM, or CRED** directly.
+
+### 5. Native Android Web Share Sheet
+- Tap **"Share Request Link"** to trigger Android's native share modal (`navigator.share`) directly sharing to WhatsApp, Telegram, or SMS.
+
+---
+
+## 🛠️ Building an Android APK (.apk)
+
+### Method A: 1-Click Capacitor Build (Configured via `capacitor.config.json`)
+```bash
+# 1. Install Capacitor CLI
+npx -y @capacitor/cli@latest init
+
+# 2. Add Android platform
+npx -y @capacitor/core@latest
+npx -y @capacitor/android@latest
+npx cap add android
+
+# 3. Open in Android Studio & Build APK
+npx cap open android
+```
+Select **Build > Build Bundle(s) / APK(s) > Build APK(s)** in Android Studio.
+
+### Method B: PWABuilder (No Android Studio Needed)
+1. Deploy your app to Netlify, Vercel, or GitHub Pages.
+2. Visit **[PWABuilder.com](https://www.pwabuilder.com)**.
+3. Enter your deployed URL and click **Package for Android (Google Play / APK)**.
+
+---
+
 ## 🚀 How to Deploy (Free)
 
 1. **Netlify Drop (Drag & Drop)**:
    - Drag this entire project folder to [app.netlify.com/drop](https://app.netlify.com/drop).
 2. **Vercel**:
    - Run `npx -y vercel` in the project directory.
-3. **Android Mobile App (.APK)**:
-   - Paste your deployed HTTPS URL into [pwabuilder.com](https://www.pwabuilder.com) and download the generated Android package.
+3. **Render / Railway**:
+   - Connect your GitHub repo and set run command to `node server.js`.
+
