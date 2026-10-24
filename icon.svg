@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="rupee-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#38bdf8" flood-opacity="0.45" />
+    </filter>
+  </defs>
+  <!-- Background Shield Rounded Square -->
+  <rect width="512" height="512" rx="112" fill="url(#grad)" />
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4" />
+  
+  <!-- Outer Circular FinTech Radar Ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="rgba(56, 189, 248, 0.25)" stroke-width="6" stroke-dasharray="16 12" />
+  <circle cx="256" cy="256" r="130" fill="rgba(15, 23, 42, 0.85)" stroke="url(#rupee-grad)" stroke-width="8" filter="url(#glow)" />
+  
+  <!-- Rupee Symbol -->
+  <path d="M205 175h102M205 215h82M205 175v120c32 0 65-12 65-45 0-30-28-40-65-40M250 250l62 90" 
+        fill="none" stroke="url(#rupee-grad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Fast Spark / Pulse Indicator -->
+  <circle cx="370" cy="140" r="14" fill="#10b981" filter="url(#glow)" />
+</svg>
