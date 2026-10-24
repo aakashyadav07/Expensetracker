@@ -1,0 +1,22 @@
+{
+  "name": "Expense Tracker — Smart Multi-Persona Finance & P2P UPI",
+  "short_name": "ExpenseTracker",
+  "description": "Next-generation personal finance, P2P money requests, smart debt return alerts, and customized interfaces in Indian Rupees (₹).",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080c14",
+  "theme_color": "#10b981",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'%3E%3Crect width='512' height='512' rx='128' fill='%230f172a'/%3E%3Cpath d='M140 100h232M140 190h232M140 280l165 150M140 280h60M200 280c130 0 130-180 0-180' stroke='%2310b981' stroke-width='40' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'%3E%3Crect width='512' height='512' rx='128' fill='%230f172a'/%3E%3Cpath d='M140 100h232M140 190h232M140 280l165 150M140 280h60M200 280c130 0 130-180 0-180' stroke='%2310b981' stroke-width='40' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

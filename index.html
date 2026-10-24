@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Expense Tracker — Smart Multi-Persona Finance & Social P2P UPI</title>
+  <meta name="description" content="Beyond ordinary UPI apps: Pre-payment auto-categorization, impulse spending shields, P2P money requests with live QR codes, and smart debt return alerts.">
+  
+  <!-- PWA & Mobile Optimization -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%2310b981'%3E%3Crect width='512' height='512' rx='128' fill='%230f172a'/%3E%3Cpath d='M140 100h232M140 190h232M140 280l165 150M140 280h60M200 280c130 0 130-180 0-180' stroke='%2310b981' stroke-width='40' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+  <div class="bg-grid-pattern"></div>
+
+  <!-- Real-Time Incoming OS Bank & UPI Notification Dropdown Banner -->
+  <div class="os-notif-banner hidden" id="os-notif-banner" role="alert" aria-live="assertive">
+    <div class="os-notif-card">
+      <div class="os-notif-header">
+        <div class="os-notif-app-info">
+          <span class="os-app-icon" id="os-app-icon">🏦</span>
+          <span class="os-app-name" id="os-app-name">HDFC Bank Alert</span>
+          <span class="os-app-dot">•</span>
+          <span class="os-app-time">Just now</span>
+        </div>
+        <button type="button" class="os-notif-close" id="os-notif-close" aria-label="Dismiss">&times;</button>
+      </div>
+      <div class="os-notif-body">
+        <p class="os-notif-text" id="os-notif-text">A/c **4120 debited by Rs 350.00 on 24-Oct-26 at Starbucks Coffee via UPI.</p>
+      </div>
+      <div class="os-notif-badge-row">
+        <span class="os-parsed-badge debit" id="os-parsed-badge">⚡ Auto-Debited: -₹350.00 (Dining)</span>
+        <span class="os-ledger-status">✓ Ledger Upgraded</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 1: AUTHENTICATION / LOGIN / REGISTRATION VIEW
+       ========================================================================= -->
+  <main class="page-container" id="auth-view">
+    <!-- Left Showcase Panel -->
+    <section class="brand-panel" aria-label="Brand Overview and Analytics Preview">
+      <div class="brand-header">
+        <div class="logo-container">
+          <div class="logo-icon-wrap">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 3h12"/>
+              <path d="M6 8h12"/>
+              <path d="m6 13 8.5 8"/>
+              <path d="M6 13h3"/>
+              <path d="M9 13c6.667 0 6.667-10 0-10"/>
+            </svg>
+          </div>
+          <div class="logo-text-group">
+            <span class="logo-title">Expense<span class="text-emerald">Tracker</span></span>
+            <span class="logo-badge">Pro v4.0</span>
+          </div>
+        </div>
+        <p class="brand-tagline">Beyond ordinary UPI apps: <strong>Pre-payment auto-categorization</strong>, <strong>impulse spending shields</strong>, and <strong>smart debt return alerts</strong> in Indian Rupees (₹).</p>
+      </div>
+
+      <!-- Interactive Persona Feature Highlights -->
+      <div class="persona-preview-grid">
+        <div class="persona-highlight-card" data-persona="student">
+          <div class="persona-card-top">
+            <span class="persona-icon-tag">🎓 Student Mode</span>
+            <span class="persona-micro-stat">Spend Guard</span>
+          </div>
+          <p class="persona-card-desc">Daily spend cap countdown, canteen tracker, and roommate expense splitting.</p>
+        </div>
+
+        <div class="persona-highlight-card" data-persona="trader">
+          <div class="persona-card-top">
+            <span class="persona-icon-tag">📈 Trader Mode</span>
+            <span class="persona-micro-stat">P&L & Win Rate</span>
+          </div>
+          <p class="persona-card-desc">Stock/F&O trade journal, ROI calculators, and capital risk management.</p>
+        </div>
+
+        <div class="persona-highlight-card" data-persona="business">
+          <div class="persona-card-top">
+            <span class="persona-icon-tag">💼 Small Business</span>
+            <span class="persona-micro-stat">GST & Invoices</span>
+          </div>
+          <p class="persona-card-desc">B2B GST calculation, client receivables tracking, and vendor payables.</p>
+        </div>
+
+        <div class="persona-highlight-card" data-persona="pro">
+          <div class="persona-card-top">
+            <span class="persona-icon-tag">👔 Salaried Pro</span>
+            <span class="persona-micro-stat">50/30/20 Rule</span>
+          </div>
+          <p class="persona-card-desc">Wealth allocation analyzer, SIP investment metrics, and fixed bills.</p>
+        </div>
+      </div>
+
+      <div class="social-proof">
+        <div class="avatar-stack">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" alt="User Avatar 1" class="avatar-img">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="User Avatar 2" class="avatar-img">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80" alt="User Avatar 3" class="avatar-img">
+        </div>
+        <div class="proof-text">
+          <div class="stars">★★★★★</div>
+          <span>Trusted by <strong>75,000+</strong> verified smart budgeters across India</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Authentication Form Panel -->
+    <section class="auth-panel" aria-label="Authentication Panel">
+      <div class="auth-card">
+        
+        <!-- Tab Switcher -->
+        <div class="tabs-container">
+          <button type="button" class="tab-btn active" id="tab-login" data-target="form-login">
+            <span>Sign In</span>
+          </button>
+          <button type="button" class="tab-btn" id="tab-register" data-target="form-register">
+            <span>Create Account</span>
+          </button>
+          <div class="tab-glider"></div>
+        </div>
+
+        <!-- 4 Quick Persona Demo Buttons -->
+        <div class="demo-login-bar">
+          <span class="demo-label">⚡ 1-Click Profile Demos:</span>
+          <div class="demo-buttons-group">
+            <button type="button" class="demo-pill-btn" id="demo-student-btn" title="Autofill College Student Profile">
+              <span>🎓 Student</span>
+            </button>
+            <button type="button" class="demo-pill-btn" id="demo-trader-btn" title="Autofill Active Trader Profile">
+              <span>📈 Trader</span>
+            </button>
+            <button type="button" class="demo-pill-btn" id="demo-business-btn" title="Autofill Small Business Profile">
+              <span>💼 Business</span>
+            </button>
+            <button type="button" class="demo-pill-btn" id="demo-pro-btn" title="Autofill Salaried Pro Profile">
+              <span>👔 Salaried</span>
+            </button>
+          </div>
+          <button type="button" class="demo-pill-btn" id="btn-login-perm-test" style="width: 100%; margin-top: 0.5rem; justify-content: center; background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399;" title="Preview Bank & UPI Notification Permission Modal">
+            <span>🛡️ Preview Notification Access Popup</span>
+          </button>
+        </div>
+
+        <!-- Social OAuth Login -->
+        <div class="social-login-group">
+          <button type="button" class="social-auth-btn" id="btn-google-auth">
+            <svg class="social-icon" viewBox="0 0 24 24" width="18" height="18">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+              <path fill="#FBBC05" d="M5.6 14.8c-.3-.8-.4-1.8-.4-2.8s.1-2 .4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z"/>
+              <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.1 7.5 23 12 23z"/>
+            </svg>
+            <span>Google</span>
+          </button>
+          <button type="button" class="social-auth-btn" id="btn-apple-auth">
+            <svg class="social-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.36c.62-.75 1.04-1.8 0.92-2.86-.9.04-2 .6-2.65 1.36-.58.67-1.08 1.74-.95 2.78 1.01.08 2.05-.53 2.68-1.28z"/>
+            </svg>
+            <span>Apple</span>
+          </button>
+        </div>
+
+        <div class="divider-row">
+          <div class="divider-line"></div>
+          <span class="divider-text">or with verified email</span>
+          <div class="divider-line"></div>
+        </div>
+
+        <!-- Form 1: Sign In Form -->
+        <form id="form-login" class="auth-form active" novalidate>
+          <div class="form-group">
+            <label for="login-email" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input 
+                type="email" 
+                id="login-email" 
+                name="email" 
+                class="form-input" 
+                placeholder="name@example.com" 
+                required 
+                autocomplete="email"
+              >
+            </div>
+            <span class="field-error-msg" id="login-email-error"></span>
+          </div>
+
+          <div class="form-group">
+            <div class="label-with-action">
+              <label for="login-password" class="form-label">Password</label>
+              <button type="button" class="link-action-btn" id="btn-forgot-pw">Forgot password?</button>
+            </div>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input 
+                type="password" 
+                id="login-password" 
+                name="password" 
+                class="form-input" 
+                placeholder="Enter your password" 
+                required 
+                autocomplete="current-password"
+              >
+              <button type="button" class="btn-toggle-pw" aria-label="Toggle password visibility" data-target="login-password">
+                <svg class="icon-eye-open" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="icon-eye-closed hidden" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+            <span class="field-error-msg" id="login-password-error"></span>
+          </div>
+
+          <div class="form-row-options">
+            <label class="custom-checkbox-container">
+              <input type="checkbox" id="remember-me" checked>
+              <span class="checkmark"></span>
+              <span class="checkbox-label">Keep me logged in for 30 days</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary-cta" id="btn-submit-login">
+            <span class="btn-text">Sign In to Dashboard</span>
+            <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+            <div class="btn-spinner hidden"></div>
+          </button>
+        </form>
+
+        <!-- Form 2: Sign Up with Persona Selection -->
+        <form id="form-register" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="reg-name" class="form-label">Full Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                id="reg-name" 
+                name="fullname" 
+                class="form-input" 
+                placeholder="Rahul Sharma" 
+                required 
+                autocomplete="name"
+              >
+            </div>
+            <span class="field-error-msg" id="reg-name-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-email" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input 
+                type="email" 
+                id="reg-email" 
+                name="email" 
+                class="form-input" 
+                placeholder="rahul@example.com" 
+                required 
+                autocomplete="email"
+              >
+            </div>
+            <span class="field-error-msg" id="reg-email-error"></span>
+          </div>
+
+          <!-- Persona Selector Section -->
+          <div class="form-group">
+            <label class="form-label">Choose Your Profile Type</label>
+            <div class="persona-selector-grid">
+              <label class="persona-option-card">
+                <input type="radio" name="reg-persona" value="student" checked>
+                <div class="persona-opt-content">
+                  <span class="persona-opt-icon">🎓</span>
+                  <span class="persona-opt-title">Student</span>
+                  <span class="persona-opt-desc">Pocket money & splits</span>
+                </div>
+              </label>
+              <label class="persona-option-card">
+                <input type="radio" name="reg-persona" value="trader">
+                <div class="persona-opt-content">
+                  <span class="persona-opt-icon">📈</span>
+                  <span class="persona-opt-title">Trader</span>
+                  <span class="persona-opt-desc">P&L & win-rate</span>
+                </div>
+              </label>
+              <label class="persona-option-card">
+                <input type="radio" name="reg-persona" value="business">
+                <div class="persona-opt-content">
+                  <span class="persona-opt-icon">💼</span>
+                  <span class="persona-opt-title">Business</span>
+                  <span class="persona-opt-desc">GST & invoices</span>
+                </div>
+              </label>
+              <label class="persona-option-card">
+                <input type="radio" name="reg-persona" value="pro">
+                <div class="persona-opt-content">
+                  <span class="persona-opt-icon">👔</span>
+                  <span class="persona-opt-title">Salaried</span>
+                  <span class="persona-opt-desc">50/30/20 budget</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password" class="form-label">Create Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input 
+                type="password" 
+                id="reg-password" 
+                name="password" 
+                class="form-input" 
+                placeholder="Minimum 8 characters" 
+                required 
+                autocomplete="new-password"
+              >
+              <button type="button" class="btn-toggle-pw" aria-label="Toggle password visibility" data-target="reg-password">
+                <svg class="icon-eye-open" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="icon-eye-closed hidden" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+            
+            <div class="pw-strength-container" id="pw-strength-wrap">
+              <div class="strength-bars">
+                <div class="str-segment" id="str-seg-1"></div>
+                <div class="str-segment" id="str-seg-2"></div>
+                <div class="str-segment" id="str-seg-3"></div>
+                <div class="str-segment" id="str-seg-4"></div>
+              </div>
+              <span class="strength-label" id="strength-text">Password strength</span>
+            </div>
+            <span class="field-error-msg" id="reg-password-error"></span>
+          </div>
+
+          <div class="form-row-options">
+            <label class="custom-checkbox-container">
+              <input type="checkbox" id="terms-agree" required>
+              <span class="checkmark"></span>
+              <span class="checkbox-label">I agree to the <a href="#terms" class="link-inline">Terms of Service</a> & <a href="#privacy" class="link-inline">Privacy Policy</a></span>
+            </label>
+          </div>
+          <span class="field-error-msg" id="terms-error"></span>
+
+          <button type="submit" class="btn-primary-cta" id="btn-submit-register">
+            <span class="btn-text">Create Free Account</span>
+            <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+            <div class="btn-spinner hidden"></div>
+          </button>
+        </form>
+
+        <div class="security-footer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Bank-grade 256-Bit SSL Encryption • SOC2 Certified</span>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       VIEW 2: DYNAMIC MULTI-PERSONA DASHBOARD & P2P HUB
+       ========================================================================= -->
+  <div class="dashboard-wrapper hidden" id="dashboard-view">
+    <!-- Top Dashboard Navigation -->
+    <header class="dashboard-navbar">
+      <div class="navbar-brand">
+        <div class="logo-icon-wrap small">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 3h12"/>
+            <path d="M6 8h12"/>
+            <path d="m6 13 8.5 8"/>
+            <path d="M6 13h3"/>
+            <path d="M9 13c6.667 0 6.667-10 0-10"/>
+          </svg>
+        </div>
+        <div class="logo-text-group">
+          <span class="logo-title">Expense<span class="text-emerald">Tracker</span></span>
+        </div>
+      </div>
+
+      <!-- Quick Action: Scan & Pay (UPI Simulator) -->
+      <button type="button" class="btn-scan-pay-nav" id="btn-open-scan-pay" title="Simulate UPI QR Scan & Payment">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path>
+          <rect x="7" y="7" width="10" height="10" rx="1"></rect>
+        </svg>
+        <span>⚡ Scan & Pay (UPI)</span>
+      </button>
+
+      <!-- Real-Time Bank & UPI Notification Auto-Sync Nav Button -->
+      <button type="button" class="btn-notif-sync-nav" id="btn-open-notif-sync" title="Bank & UPI Notification Auto-Listener">
+        <span class="live-pulse-dot"></span>
+        <span>📡 Auto-Sync: Active</span>
+      </button>
+
+      <!-- Live Persona Switcher Dropdown -->
+      <div class="navbar-persona-switcher">
+        <span class="switcher-label">View:</span>
+        <div class="persona-switch-pills">
+          <button type="button" class="switch-pill-btn" data-persona="student" id="switch-to-student">🎓 Student</button>
+          <button type="button" class="switch-pill-btn" data-persona="trader" id="switch-to-trader">📈 Trader</button>
+          <button type="button" class="switch-pill-btn" data-persona="business" id="switch-to-business">💼 Business</button>
+          <button type="button" class="switch-pill-btn" data-persona="pro" id="switch-to-pro">👔 Salaried</button>
+        </div>
+      </div>
+
+      <!-- NEW: User Toggle Setting for Pre-Payment Auto-Categorizer -->
+      <div class="pre-payment-toggle-pill" title="When ON, asks for expense category before paying to auto-log without manual bookkeeping">
+        <span class="toggle-pill-label">⚡ Pre-Payment Auto-Categorize</span>
+        <label class="switch-control">
+          <input type="checkbox" id="toggle-pre-payment-categorizer" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="navbar-user-actions">
+        <!-- PWA Install Button -->
+        <button type="button" class="btn-install-app" id="btn-pwa-install" title="Install as mobile/desktop app">
+          <span>📲 Install App</span>
+        </button>
+
+        <!-- Notification Bell Dropdown -->
+        <div class="notif-wrapper">
+          <button type="button" class="btn-notif-bell" id="btn-notif-toggle" aria-label="Notifications & Debt Reminders">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notif-counter-badge hidden" id="notif-counter">0</span>
+          </button>
+          <!-- Notification Dropdown Drawer -->
+          <div class="notif-drawer hidden" id="notif-drawer">
+            <div class="notif-drawer-header">
+              <span class="notif-drawer-title">Smart Debt & Return Alerts</span>
+              <span class="notif-drawer-subtitle" id="notif-status-sub">0 Pending</span>
+            </div>
+            <div class="notif-drawer-list" id="notif-drawer-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="user-pill">
+          <div class="user-avatar-circle">
+            <span id="user-avatar-initials">RS</span>
+          </div>
+          <div class="user-pill-details">
+            <span class="user-pill-name" id="dash-user-name">Rahul Sharma</span>
+            <div class="badges-row">
+              <span class="verified-badge-pill">✓ Verified</span>
+              <span class="persona-active-badge" id="dash-persona-badge">🎓 College Student</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-logout" id="btn-logout" title="Sign Out">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Smart Debt Alert Banner -->
+    <div class="smart-debt-alert-banner hidden" id="smart-debt-alert-banner">
+      <div class="smart-alert-left">
+        <span class="smart-alert-icon">💡</span>
+        <div class="smart-alert-text">
+          <span class="smart-alert-heading" id="smart-alert-heading">Debt Settlement Opportunity!</span>
+          <span class="smart-alert-subtext" id="smart-alert-subtext">You have sufficient balance to return pending money to friends.</span>
+        </div>
+      </div>
+      <div class="smart-alert-actions">
+        <button type="button" class="btn-settle-fast" id="btn-smart-settle-action">Settle Debt Now</button>
+        <button type="button" class="btn-dismiss-alert" id="btn-dismiss-smart-alert">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Real-Time Bank/UPI Notification Auto-Sync Status Bar -->
+    <div class="bank-sync-status-bar" id="bank-sync-status-bar">
+      <div class="sync-status-left">
+        <span class="sync-radar-icon">📡</span>
+        <div class="sync-status-info">
+          <div class="sync-status-title-row">
+            <strong>Bank & UPI Notification Auto-Sync: ACTIVE</strong>
+            <span class="sync-pill-tag">On-Device Listener</span>
+          </div>
+          <span class="sync-status-sub">Listening for financial SMS & alerts from HDFC, SBI, ICICI, Axis, Google Pay, PhonePe, Paytm</span>
+        </div>
+      </div>
+      <div class="sync-status-actions">
+        <button type="button" class="btn-simulate-notif" id="btn-open-perm-modal" title="View or Re-configure Notification Access">
+          <span>🛡️ Notification Access Setup</span>
+        </button>
+        <button type="button" class="btn-simulate-notif" id="btn-trigger-notif-sim">
+          <span>⚡ Simulate / Paste Bank Notification</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+      <!-- Persona Welcome Banner -->
+      <div class="persona-banner" id="dash-persona-banner">
+        <div class="persona-banner-content">
+          <h2 class="persona-banner-title" id="banner-title">Welcome to Student Pocket Budget</h2>
+          <p class="persona-banner-desc" id="banner-desc">Track your monthly allowance, campus canteen spends, and split hostel bills effortlessly.</p>
+        </div>
+        <div class="persona-banner-badge" id="banner-stat-chip">14 Days Left in Month</div>
+      </div>
+
+      <!-- Dynamic Metric Cards + AI Financial Health Score -->
+      <section class="dash-stats-grid" id="dash-stats-container">
+        <!-- Rendered by app.js -->
+      </section>
+
+      <!-- Specialized Tool Card Section -->
+      <section class="dash-specialized-tool" id="dash-tool-container">
+        <!-- Rendered by app.js -->
+      </section>
+
+      <!-- PEER-TO-PEER LENDING & UPI REQUEST HUB (KHAATA) -->
+      <section class="p2p-khaata-section">
+        <div class="p2p-section-header">
+          <div>
+            <div class="p2p-title-group">
+              <span class="p2p-badge">⚡ Social P2P & Khaata</span>
+              <h3 class="dash-section-title">Peer-to-Peer Lend & Borrow Tracker</h3>
+            </div>
+            <p class="dash-section-subtitle">Track money you owe to friends and request pending money with live UPI QR codes</p>
+          </div>
+          <div class="p2p-actions-row">
+            <button type="button" class="btn-primary-cta sm-cta" id="btn-open-request-money">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>+ Request Money / Add Debt</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Tabs: I Owe vs Owed To Me -->
+        <div class="debts-tabs-row">
+          <button type="button" class="debt-tab-btn active" id="tab-debt-i-owe" data-tab="i_owe">
+            <span>Money I Owe (To Return)</span>
+            <span class="debt-pill-counter red" id="count-i-owe">0</span>
+          </button>
+          <button type="button" class="debt-tab-btn" id="tab-debt-owed-to-me" data-tab="owed_to_me">
+            <span>Money Owed to Me (To Collect)</span>
+            <span class="debt-pill-counter green" id="count-owed-to-me">0</span>
+          </button>
+        </div>
+
+        <!-- Debts Cards Grid -->
+        <div class="debts-cards-grid" id="debts-cards-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </section>
+
+      <!-- LIVE TRANSACTION JOURNAL (WITH EDIT & DELETE CAPABILITIES) -->
+      <section class="dash-transactions-section">
+        <div class="dash-section-header">
+          <div>
+            <h3 class="dash-section-title" id="tx-section-title">Live Transaction Journal</h3>
+            <p class="dash-section-subtitle" id="tx-section-subtitle">Real-time editable ledger with instant balance synchronization</p>
+          </div>
+          <button type="button" class="btn-primary-cta sm-cta" id="btn-open-tx-modal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span id="btn-add-tx-text">+ Add Entry</span>
+          </button>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="ledger-filter-bar">
+          <div class="input-wrapper search-wrapper">
+            <span class="input-icon">🔍</span>
+            <input type="text" id="tx-search-input" class="form-input" placeholder="Search transactions, notes or categories...">
+          </div>
+          <div class="filter-type-pills">
+            <button type="button" class="filter-type-btn active" data-filter="all">All</button>
+            <button type="button" class="filter-type-btn" data-filter="income">Income</button>
+            <button type="button" class="filter-type-btn" data-filter="expense">Expense</button>
+          </div>
+        </div>
+
+        <!-- Transactions Container -->
+        <div class="dash-tx-card-wrapper">
+          <div class="dash-tx-list" id="dashboard-tx-list">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: SCAN & PAY (UPI SIMULATOR)
+       ========================================================================= -->
+  <div class="modal-backdrop hidden" id="scan-pay-modal">
+    <div class="modal-box scan-pay-modal-box">
+      <button type="button" class="modal-close-btn" id="scan-pay-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header" style="background: rgba(16, 185, 129, 0.18); color: #10b981;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path>
+          <rect x="7" y="7" width="10" height="10" rx="1"></rect>
+        </svg>
+      </div>
+      <h3 class="modal-title">⚡ Scan & Pay (UPI)</h3>
+      <p class="modal-desc">Simulate paying a merchant or friend via UPI. If Auto-Categorize is ON, it will ask for category before debiting!</p>
+
+      <!-- Mock Camera QR Viewfinder Scanner -->
+      <div class="camera-scanner-view">
+        <div class="scanner-laser-line"></div>
+        <div class="scanner-frame-corners"></div>
+        <span class="scanner-subtext">📷 Camera Viewfinder Active • Point at any UPI QR Code</span>
+      </div>
+
+      <!-- Quick Demo Merchant Shortcuts -->
+      <div class="quick-merchants-row">
+        <span class="quick-merchant-label">1-Tap Quick Pay to:</span>
+        <div class="merchant-pills-wrap">
+          <button type="button" class="merchant-pill" data-merchant="Campus Canteen" data-upi="canteen@upi" data-amount="180">🍔 Canteen (₹180)</button>
+          <button type="button" class="merchant-pill" data-merchant="Starbucks Cafe" data-upi="starbucks@okhdfc" data-amount="350">☕ Starbucks (₹350)</button>
+          <button type="button" class="merchant-pill" data-merchant="Swiggy Dining" data-upi="swiggy@icici" data-amount="420">🍕 Swiggy (₹420)</button>
+          <button type="button" class="merchant-pill" data-merchant="Uber India" data-upi="uber@axis" data-amount="240">🚕 Uber (₹240)</button>
+        </div>
+      </div>
+
+      <form id="form-scan-pay" novalidate>
+        <div class="form-group">
+          <label for="pay-merchant-name" class="form-label">Paying To (Merchant or Friend)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏪</span>
+            <input type="text" id="pay-merchant-name" class="form-input" placeholder="e.g. Campus Canteen, Starbucks" required>
+          </div>
+          <span class="field-error-msg" id="pay-merchant-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="pay-upi-vpa" class="form-label">UPI ID / VPA</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📱</span>
+            <input type="text" id="pay-upi-vpa" class="form-input" placeholder="e.g. merchant@upi">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pay-amount" class="form-label">Amount (₹ Rupee)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">₹</span>
+            <input type="number" id="pay-amount" class="form-input" placeholder="e.g. 250" min="1" step="0.01" required>
+          </div>
+          <span class="field-error-msg" id="pay-amount-error"></span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="scan-pay-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-proceed-pay">
+            <span class="btn-text">Proceed to Pay via UPI</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       NEW MODAL: PRE-PAYMENT SMART EXPENSE CATEGORIZER & BUDGET SHIELD
+       ========================================================================= -->
+  <div class="modal-backdrop hidden" id="pre-payment-modal">
+    <div class="modal-box pre-payment-modal-box">
+      <div class="modal-icon-header" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <h3 class="modal-title">Before You Pay: What Type of Expense Is This?</h3>
+      <p class="modal-desc">Select a category so Expense Tracker automatically balances your budget and logs this transaction.</p>
+
+      <!-- Payment Summary Chip -->
+      <div class="payment-pre-summary">
+        <div>
+          <span class="summary-caption">Payment Amount</span>
+          <h2 class="summary-amount" id="pre-pay-amount-display">₹350.00</h2>
+        </div>
+        <div style="text-align:right;">
+          <span class="summary-caption">Recipient</span>
+          <span class="summary-recipient" id="pre-pay-merchant-display">Starbucks Cafe</span>
+        </div>
+      </div>
+
+      <!-- Impulse Spending Shield Alert (Visible if payment exceeds daily budget) -->
+      <div class="impulse-shield-alert hidden" id="impulse-shield-alert">
+        <span class="shield-icon">🛡️</span>
+        <div class="shield-text">
+          <span class="shield-title">Impulse Spending Guardrail Triggered!</span>
+          <span class="shield-desc" id="shield-alert-desc">This payment exceeds your daily spend limit. Do you still want to proceed?</span>
+        </div>
+      </div>
+
+      <!-- 1-Tap Category Chips Selection -->
+      <div class="pre-category-section">
+        <label class="form-label">Tap Expense Category:</label>
+        <div class="pre-category-chips-grid" id="pre-category-chips-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+      <!-- Live Budget Impact Meter -->
+      <div class="budget-impact-preview">
+        <div class="impact-header">
+          <span>Budget Forecast</span>
+          <span class="impact-val" id="impact-forecast-val">Remaining Balance: ₹8,150.00</span>
+        </div>
+        <div class="impact-progress-track">
+          <div class="impact-progress-fill" id="impact-progress-fill" style="width: 45%;"></div>
+        </div>
+      </div>
+
+      <!-- Optional Split With Friend Checkbox -->
+      <div class="pre-split-option">
+        <label class="custom-checkbox-container">
+          <input type="checkbox" id="pre-split-toggle">
+          <span class="checkmark"></span>
+          <span class="checkbox-label">Split this bill 50-50 with a roommate / friend?</span>
+        </label>
+        <div class="pre-split-friend-input hidden" id="pre-split-friend-wrap">
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="pre-split-friend-name" class="form-input" placeholder="Friend's Name (e.g. Rohan)">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="pre-pay-cancel">Cancel Payment</button>
+        <button type="button" class="btn-primary-cta" id="btn-confirm-auto-record">
+          <span class="btn-text">Confirm Payment & Auto-Record</span>
+          <div class="btn-spinner hidden"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: OTP ACCOUNT VERIFICATION -->
+  <div class="modal-backdrop hidden" id="otp-modal">
+    <div class="modal-box otp-modal-box">
+      <div class="modal-icon-header verified-icon-header">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+      </div>
+      <h3 class="modal-title">Verify Your Account</h3>
+      <p class="modal-desc">To protect your financial records, only verified email accounts can access Expense Tracker. We dispatched a 6-digit activation code to <strong id="otp-target-email" class="text-white">user@example.com</strong>.</p>
+      
+      <div class="simulated-email-notice">
+        <div class="sim-notice-top">
+          <span class="sim-badge">📨 Simulated Inbox Delivery</span>
+          <button type="button" class="btn-auto-fill-otp" id="btn-auto-fill-otp">Click to Auto-fill Code</button>
+        </div>
+        <div class="sim-notice-body">
+          <span>Your 6-Digit OTP is: <strong id="otp-hint-code" class="otp-hint-highlight">------</strong></span>
+        </div>
+      </div>
+
+      <div class="otp-container-form">
+        <label class="form-label" style="text-align: center; margin-bottom: 0.5rem;">Enter 6-Digit Verification Code</label>
+        <div class="otp-inputs-wrapper" id="otp-inputs-wrapper">
+          <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" data-index="0" autofocus>
+          <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" data-index="1">
+          <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" data-index="2">
+          <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" data-index="3">
+          <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" data-index="4">
+          <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" data-index="5">
+        </div>
+        <span class="field-error-msg text-center" id="otp-error-msg"></span>
+
+        <button type="button" class="btn-primary-cta" id="btn-verify-otp">
+          <span class="btn-text">Verify & Activate Account</span>
+          <div class="btn-spinner hidden"></div>
+        </button>
+
+        <div class="otp-modal-footer">
+          <button type="button" class="link-action-btn" id="btn-resend-otp">Resend New Code</button>
+          <span class="dot-separator">•</span>
+          <button type="button" class="link-action-btn" id="btn-cancel-otp">Return to Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD TRANSACTION -->
+  <div class="modal-backdrop hidden" id="tx-modal">
+    <div class="modal-box">
+      <button type="button" class="modal-close-btn" id="tx-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+      <h3 class="modal-title" id="tx-modal-title">Record Financial Entry</h3>
+      <p class="modal-desc" id="tx-modal-desc">Log a new entry into your verified ledger in Indian Rupees (₹).</p>
+      
+      <form id="form-add-tx" novalidate>
+        <div class="form-group">
+          <label for="tx-type" class="form-label">Entry Type</label>
+          <div class="tx-type-toggle">
+            <button type="button" class="tx-toggle-btn active" data-type="expense" id="tx-type-expense">Expense / Outflow</button>
+            <button type="button" class="tx-toggle-btn" data-type="income" id="tx-type-income">Income / Inflow</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tx-title" class="form-label" id="tx-label-title">Description</label>
+          <div class="input-wrapper">
+            <input type="text" id="tx-title" class="form-input" placeholder="e.g. Canteen, Nifty Call, Client Invoice" required>
+          </div>
+          <span class="field-error-msg" id="tx-title-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="tx-amount" class="form-label">Amount (₹ Rupee)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">₹</span>
+            <input type="number" id="tx-amount" class="form-input" placeholder="e.g. 850" step="0.01" min="1" required>
+          </div>
+          <span class="field-error-msg" id="tx-amount-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="tx-category" class="form-label">Category</label>
+          <div class="input-wrapper">
+            <select id="tx-category" class="form-input form-select"></select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="tx-modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-save-tx">
+            <span class="btn-text">Save Entry</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT TRANSACTION -->
+  <div class="modal-backdrop hidden" id="edit-tx-modal">
+    <div class="modal-box">
+      <button type="button" class="modal-close-btn" id="edit-tx-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header" style="background: rgba(6, 182, 212, 0.18); color: #06b6d4;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </div>
+      <h3 class="modal-title">Edit Transaction</h3>
+      <p class="modal-desc">Modify entry details. Your live balances and charts will recalculate automatically.</p>
+      
+      <form id="form-edit-tx" novalidate>
+        <input type="hidden" id="edit-tx-id">
+        <div class="form-group">
+          <label class="form-label">Entry Type</label>
+          <div class="tx-type-toggle">
+            <button type="button" class="tx-toggle-btn" data-type="expense" id="edit-type-expense">Expense</button>
+            <button type="button" class="tx-toggle-btn" data-type="income" id="edit-type-income">Income</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-tx-title" class="form-label">Description</label>
+          <div class="input-wrapper">
+            <input type="text" id="edit-tx-title" class="form-input" required>
+          </div>
+          <span class="field-error-msg" id="edit-tx-title-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-tx-amount" class="form-label">Amount (₹ Rupee)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">₹</span>
+            <input type="number" id="edit-tx-amount" class="form-input" step="0.01" min="1" required>
+          </div>
+          <span class="field-error-msg" id="edit-tx-amount-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-tx-category" class="form-label">Category</label>
+          <div class="input-wrapper">
+            <select id="edit-tx-category" class="form-input form-select"></select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="edit-tx-modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-update-tx">
+            <span class="btn-text">Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REQUEST MONEY & LIVE UPI QR CODE -->
+  <div class="modal-backdrop hidden" id="request-money-modal">
+    <div class="modal-box request-money-modal-box">
+      <button type="button" class="modal-close-btn" id="request-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header" style="background: rgba(168, 85, 247, 0.18); color: #a855f7;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <line x1="12" y1="12" x2="12" y2="12.01"></line>
+          <path d="M16 8h-4a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"></path>
+        </svg>
+      </div>
+      <h3 class="modal-title">P2P Money Request & Debt Tracker</h3>
+      <p class="modal-desc">Request money from a friend via live UPI QR or track money you have borrowed to return.</p>
+      
+      <form id="form-p2p-request" novalidate>
+        <div class="form-group">
+          <label class="form-label">Debt / Request Relationship</label>
+          <div class="tx-type-toggle">
+            <button type="button" class="tx-toggle-btn active" data-type="owed_to_me" id="btn-rel-collect">
+              <span>Friend Owes Me (Request)</span>
+            </button>
+            <button type="button" class="tx-toggle-btn" data-type="i_owe" id="btn-rel-borrow">
+              <span>I Owe Friend (To Return)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p2p-friend-name" class="form-label">Friend's Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="p2p-friend-name" class="form-input" placeholder="e.g. Rohan Sharma, Ananya" required>
+          </div>
+          <span class="field-error-msg" id="p2p-friend-name-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="p2p-upi-id" class="form-label">Friend's UPI ID / Phone (Optional)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📱</span>
+            <input type="text" id="p2p-upi-id" class="form-input" placeholder="e.g. rohan@okhdfcbank or 9876543210">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p2p-amount" class="form-label">Amount (₹ Rupee)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">₹</span>
+            <input type="number" id="p2p-amount" class="form-input" placeholder="e.g. 1200" min="1" required>
+          </div>
+          <span class="field-error-msg" id="p2p-amount-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="p2p-note" class="form-label">Reason / Split Note</label>
+          <div class="input-wrapper">
+            <input type="text" id="p2p-note" class="form-input" placeholder="e.g. Weekend dinner, Hostel WiFi share, Book bill">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p2p-due-date" class="form-label">Target Return Date</label>
+          <div class="input-wrapper">
+            <input type="date" id="p2p-due-date" class="form-input" style="color-scheme: dark;">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="p2p-modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-create-p2p-request">
+            <span class="btn-text">Generate UPI QR & Record</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="upi-generated-box hidden" id="upi-generated-box">
+        <div class="upi-qr-card">
+          <div class="upi-badge-header">
+            <span class="upi-logo-text">BHIM • Google Pay • PhonePe • Paytm</span>
+          </div>
+          <div class="upi-qr-image-wrap" id="upi-qr-image-wrap"></div>
+          <div class="upi-amount-tag">
+            <span>Scan to Pay: <strong id="qr-amount-display">₹1,200.00</strong></span>
+          </div>
+          <span class="upi-subnote" id="qr-note-display">For: Weekend Dinner Split</span>
+        </div>
+
+        <div class="p2p-share-actions">
+          <button type="button" class="btn-whatsapp-share" id="btn-whatsapp-share">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c4.54 0 8.24 3.7 8.24 8.24 0 2.2-.86 4.27-2.42 5.82a8.19 8.19 0 0 1-5.82 2.42c-1.45 0-2.88-.39-4.14-1.12l-.3-.18-3.08.81.82-3-.19-.31A8.2 8.2 0 0 1 3.8 11.9c0-4.54 3.7-8.24 8.24-8.24m4.53 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.25-1.5-1.4-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44s-.56-1.36-.77-1.86c-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.43 1.03 2.6c.13.17 1.77 2.7 4.29 3.78.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.11-.23-.17-.48-.3"/>
+            </svg>
+            <span>Send Request on WhatsApp</span>
+          </button>
+          <button type="button" class="btn-secondary" id="btn-finish-p2p">Done & Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SCAN & PAY (UPI SIMULATOR) -->
+  <div class="modal-backdrop hidden" id="scan-pay-modal">
+    <div class="modal-box scan-pay-modal-box">
+      <button type="button" class="modal-close-btn" id="scan-pay-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header" style="background: rgba(16, 185, 129, 0.18); color: #10b981;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"></path>
+          <rect x="7" y="7" width="10" height="10" rx="1"></rect>
+        </svg>
+      </div>
+      <h3 class="modal-title">⚡ Scan & Pay / Send UPI</h3>
+      <p class="modal-desc">Simulate a live merchant QR scan or enter UPI ID to test the Pre-Payment Smart Categorizer.</p>
+
+      <!-- Simulated Camera Viewfinder -->
+      <div class="camera-scanner-view">
+        <div class="viewfinder-frame">
+          <div class="viewfinder-corner top-left"></div>
+          <div class="viewfinder-corner top-right"></div>
+          <div class="viewfinder-corner bottom-left"></div>
+          <div class="viewfinder-corner bottom-right"></div>
+          <div class="scanner-laser-line"></div>
+          <div class="scanner-center-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Align UPI QR Code within Frame</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Merchant Shortcuts -->
+      <div class="quick-merchants-section">
+        <span class="quick-section-label">Or 1-Tap Quick Merchants:</span>
+        <div class="merchant-pills-wrap">
+          <button type="button" class="quick-merchant-chip" data-name="Campus Canteen" data-upi="canteen@okaxis" data-amount="60" data-note="Chai & Snacks">☕ Canteen (₹60)</button>
+          <button type="button" class="quick-merchant-chip" data-name="Swiggy Delivery" data-upi="swiggy@icici" data-amount="340" data-note="Lunch Order">🍔 Swiggy (₹340)</button>
+          <button type="button" class="quick-merchant-chip" data-name="Uber Rides" data-upi="uber@axisbank" data-amount="165" data-note="Auto to Metro">🚕 Uber (₹165)</button>
+          <button type="button" class="quick-merchant-chip" data-name="Campus Book Depot" data-upi="books@sbi" data-amount="850" data-note="Semester Reference Books">📚 Books (₹850)</button>
+          <button type="button" class="quick-merchant-chip" data-name="DMart Grocery" data-upi="dmart@hdfcbank" data-amount="1450" data-note="Weekly essentials">🛒 Grocery (₹1,450)</button>
+        </div>
+      </div>
+
+      <form id="form-scan-pay" novalidate>
+        <div class="form-group">
+          <label for="scan-pay-merchant" class="form-label">Merchant / Recipient Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏪</span>
+            <input type="text" id="scan-pay-merchant" class="form-input" placeholder="e.g. Campus Canteen, Swiggy, Uber" required>
+          </div>
+          <span class="field-error-msg" id="scan-pay-merchant-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="scan-pay-upi-id" class="form-label">Receiver UPI ID / VPA</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🆔</span>
+            <input type="text" id="scan-pay-upi-id" class="form-input" placeholder="e.g. merchant@okaxis or 9876543210@paytm">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="scan-pay-amount" class="form-label">Amount to Pay (₹)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">₹</span>
+            <input type="number" id="scan-pay-amount" class="form-input" placeholder="e.g. 250" min="1" step="0.01" required>
+          </div>
+          <span class="field-error-msg" id="scan-pay-amount-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="scan-pay-note" class="form-label">Payment Note (Optional)</label>
+          <div class="input-wrapper">
+            <input type="text" id="scan-pay-note" class="form-input" placeholder="e.g. Evening coffee, Books, Team lunch">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="scan-pay-modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-scan-pay-proceed">
+            <span class="btn-text">Proceed to Pay via UPI</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PRE-PAYMENT SMART CATEGORIZER & IMPULSE SPENDING SHIELD -->
+  <div class="modal-backdrop hidden" id="pre-payment-modal">
+    <div class="modal-box pre-payment-modal-box">
+      <button type="button" class="modal-close-btn" id="pre-payment-modal-close" aria-label="Close dialog">&times;</button>
+      
+      <div class="pre-payment-header-badge">
+        <span class="shield-badge-pill">🛡️ Pre-Payment Auto-Categorizer</span>
+        <span class="shield-anti-upi-tag">What BHIM & PhonePe Lack</span>
+      </div>
+
+      <h3 class="modal-title">What type of expense is this?</h3>
+      <p class="modal-desc">Categorize this payment before money is debited so your ledger is updated automatically without manual bookkeeping.</p>
+
+      <!-- Transaction Preview Card -->
+      <div class="payment-pre-summary">
+        <div class="pre-summary-merchant">
+          <span class="pre-sum-label">Paying To:</span>
+          <strong class="pre-sum-merchant-name" id="pre-pay-merchant-name">Campus Canteen</strong>
+          <span class="pre-sum-upi-vpa" id="pre-pay-upi-display">canteen@okaxis</span>
+        </div>
+        <div class="pre-summary-amount">
+          <span class="pre-sum-label">Debit Amount</span>
+          <div class="pre-sum-rupee-val" id="pre-pay-amount-display">₹340.00</div>
+        </div>
+      </div>
+
+      <!-- Impulse Spending Shield Alert (Dynamically toggled) -->
+      <div class="impulse-shield-alert hidden" id="pre-pay-impulse-warning">
+        <div class="impulse-alert-icon">⚠️</div>
+        <div class="impulse-alert-text">
+          <strong class="impulse-title">Impulse Spending Shield Alert!</strong>
+          <p class="impulse-desc" id="pre-pay-impulse-desc">This payment exceeds your daily spend allowance by ₹140. Consider if this expense is essential before proceeding.</p>
+        </div>
+      </div>
+
+      <!-- 1-Tap Category Chips Selection -->
+      <div class="form-group pre-category-section">
+        <div class="pre-category-label-row">
+          <label class="form-label">Select Expense Category (1-Tap):</label>
+          <span class="selected-cat-indicator" id="pre-selected-category-name">Canteen & Dining</span>
+        </div>
+        <div class="pre-category-chips-grid" id="pre-category-chips-grid">
+          <!-- Dynamically populated per active persona -->
+        </div>
+      </div>
+
+      <!-- Live Budget Forecast Bar -->
+      <div class="budget-impact-preview">
+        <div class="impact-stats-row">
+          <div>
+            <span class="impact-label">Available Balance:</span>
+            <strong class="impact-val" id="pre-impact-curr-bal">₹5,230.00</strong>
+          </div>
+          <div class="impact-arrow">➔</div>
+          <div>
+            <span class="impact-label">Balance After Debit:</span>
+            <strong class="impact-val highlighted" id="pre-impact-new-bal">₹4,890.00</strong>
+          </div>
+        </div>
+        <div class="impact-progress-track">
+          <div class="impact-progress-fill" id="pre-impact-progress-bar" style="width: 25%;"></div>
+        </div>
+      </div>
+
+      <!-- Auto-Split 50-50 with Friend Checkbox -->
+      <div class="pre-split-option">
+        <label class="custom-checkbox-container">
+          <input type="checkbox" id="pre-pay-split-checkbox">
+          <span class="checkmark"></span>
+          <span class="checkbox-label font-medium">🤝 Split this expense 50% with a friend?</span>
+        </label>
+        <div class="pre-split-details hidden" id="pre-split-details">
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="pre-pay-split-friend" class="form-input" placeholder="Friend's Name (e.g. Rohan Sharma)" value="Rohan Sharma">
+          </div>
+          <span class="pre-split-note" id="pre-pay-split-note">Will create a ₹170.00 "Friend Owes Me" Khaata entry automatically!</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="pre-payment-modal-cancel">Cancel Payment</button>
+        <button type="button" class="btn-primary-cta confirm-pre-pay-btn" id="btn-pre-payment-confirm">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span class="btn-text">Confirm Payment & Auto-Record</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FORGOT PASSWORD -->
+  <div class="modal-backdrop hidden" id="forgot-modal">
+    <div class="modal-box">
+      <button type="button" class="modal-close-btn" id="modal-close-x" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h3 class="modal-title">Reset Your Password</h3>
+      <p class="modal-desc">Enter your registered email address and we'll send you a secure verification link to reset your credentials.</p>
+      
+      <form id="form-forgot" novalidate>
+        <div class="form-group">
+          <label for="forgot-email" class="form-label">Account Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <input type="email" id="forgot-email" class="form-input" placeholder="you@example.com" required>
+          </div>
+          <span class="field-error-msg" id="forgot-email-error"></span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-submit-forgot">
+            <span class="btn-text">Send Reset Link</span>
+            <div class="btn-spinner hidden"></div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: MANDATORY BANK & UPI NOTIFICATION PERMISSION GATE
+       ========================================================================= -->
+  <div class="modal-backdrop hidden" id="mandatory-notif-modal">
+    <div class="modal-box mandatory-notif-box">
+      <button type="button" class="modal-close-btn" id="mandatory-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="mandatory-shield-badge">
+        <div class="shield-pulse-ring"></div>
+        <span class="shield-main-icon">🛡️</span>
+      </div>
+      <h3 class="modal-title">Mandatory Setup: Auto-Sync Bank & UPI Notifications</h3>
+      <p class="modal-desc">
+        To enable automatic credit & debit tracking without manual bookkeeping, <strong>Expense Tracker requires access to financial SMS and UPI notifications</strong> (GPay, PhonePe, Paytm, and your bank).
+      </p>
+
+      <!-- Live Browser Permission Indicator Badge -->
+      <div class="browser-perm-status" id="browser-perm-status-wrap">
+        <span class="perm-status-dot" id="perm-status-dot"></span>
+        <span class="perm-status-text" id="browser-perm-status-text">Browser Push Permission: Ready to Grant</span>
+      </div>
+
+      <div class="mandatory-features-list">
+        <div class="mandatory-feature-item">
+          <span class="mandatory-item-icon">⚡</span>
+          <div class="mandatory-item-text">
+            <strong>Zero Manual Logging</strong>
+            <span>Every time money is debited or credited, your balance updates in real-time within 0.5s.</span>
+          </div>
+        </div>
+        <div class="mandatory-feature-item">
+          <span class="mandatory-item-icon">🏦</span>
+          <div class="mandatory-item-text">
+            <strong>Supports All Major Indian Banks & UPI Apps</strong>
+            <span>HDFC, SBI, ICICI, Axis, Kotak, Google Pay, PhonePe, Paytm, CRED & BHIM.</span>
+          </div>
+        </div>
+        <div class="mandatory-feature-item">
+          <span class="mandatory-item-icon">🔒</span>
+          <div class="mandatory-item-text">
+            <strong>100% On-Device & Private</strong>
+            <span>Parsed locally on your device. OTPs, passwords, and private messages are strictly filtered and never read.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mandatory-permission-checklist">
+        <label class="custom-checkbox-container disabled">
+          <input type="checkbox" checked disabled>
+          <span class="checkmark"></span>
+          <span class="checkbox-label">Financial Transaction Notifications (SMS & Push)</span>
+        </label>
+        <label class="custom-checkbox-container disabled">
+          <input type="checkbox" checked disabled>
+          <span class="checkmark"></span>
+          <span class="checkbox-label">UPI App Payment Alerts (GPay / PhonePe / Paytm)</span>
+        </label>
+        <label class="custom-checkbox-container disabled">
+          <input type="checkbox" checked disabled>
+          <span class="checkmark"></span>
+          <span class="checkbox-label">Real-Time Ledger Auto-Upgradation Engine</span>
+        </label>
+      </div>
+
+      <div class="modal-actions full-width-action" style="flex-direction: column; gap: 0.65rem;">
+        <button type="button" class="btn-primary-cta" id="btn-grant-mandatory-permission">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span class="btn-text">Grant Permission & Activate Auto-Sync</span>
+        </button>
+        <button type="button" class="btn-secondary" id="btn-skip-mandatory-permission" style="font-size: 0.82rem; padding: 0.65rem 1rem;">
+          <span>Dismiss / Remind Me Later</span>
+        </button>
+      </div>
+
+      <div class="security-footer" style="margin-top: 1rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>RBI & SOC2 Privacy Compliant • NotificationListenerService Architecture</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: BANK & UPI NOTIFICATION SIMULATOR & TEST HARNESS
+       ========================================================================= -->
+  <div class="modal-backdrop hidden" id="notif-simulator-modal">
+    <div class="modal-box notif-simulator-box">
+      <button type="button" class="modal-close-btn" id="notif-sim-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header" style="background: rgba(16, 185, 129, 0.18); color: #10b981;">
+        <span style="font-size: 1.5rem;">📡</span>
+      </div>
+      <h3 class="modal-title">Live Bank & UPI Notification Simulator</h3>
+      <p class="modal-desc">
+        Test how Expense Tracker automatically detects incoming credits/debits from bank SMS or UPI notifications and upgrades your ledger in real-time.
+      </p>
+
+      <!-- 1-Tap Quick Presets -->
+      <div class="sim-presets-section">
+        <label class="form-label">Tap Real-World Sample Notification:</label>
+        <div class="sim-presets-grid">
+          <button type="button" class="sim-preset-btn debit" data-source="HDFC Bank" data-text="Alert: A/c **4120 debited by Rs 350.00 on 24-Oct-26 at Starbucks Coffee via UPI. Avl Bal: Rs 4,880.00.">
+            <span class="preset-tag red">HDFC Debit</span>
+            <span class="preset-summary">₹350 at Starbucks</span>
+          </button>
+          <button type="button" class="sim-preset-btn debit" data-source="Google Pay" data-text="Google Pay: Paid ₹240.00 to Campus Canteen via UPI ID canteen@okaxis. Ref 41098231.">
+            <span class="preset-tag red">GPay Debit</span>
+            <span class="preset-summary">₹240 to Canteen</span>
+          </button>
+          <button type="button" class="sim-preset-btn credit" data-source="State Bank of India (SBI)" data-text="SBI Alert: Your A/c **9182 is credited by Rs 75,000.00 on 24-Oct-26 by TECH CORP SALARY. Avl Bal: Rs 82,450.00.">
+            <span class="preset-tag green">SBI Credit</span>
+            <span class="preset-summary">₹75,000 Salary</span>
+          </button>
+          <button type="button" class="sim-preset-btn credit" data-source="PhonePe" data-text="PhonePe Alert: Received ₹1,200.00 from Rohan Sharma for Hostel WiFi bill via UPI.">
+            <span class="preset-tag green">PhonePe Credit</span>
+            <span class="preset-summary">₹1,200 from Friend</span>
+          </button>
+          <button type="button" class="sim-preset-btn debit" data-source="ICICI Bank" data-text="ICICI Bank Alert: A/c XX5541 debited with INR 420.00 on 24-Oct-26 for Swiggy Order via UPI.">
+            <span class="preset-tag red">ICICI Debit</span>
+            <span class="preset-summary">₹420 on Swiggy</span>
+          </button>
+          <button type="button" class="sim-preset-btn debit" data-source="Paytm" data-text="Paytm: Sent ₹180.00 to Uber India for Auto Ride. Ref ID 883921.">
+            <span class="preset-tag red">Paytm Debit</span>
+            <span class="preset-summary">₹180 for Uber</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom SMS / Notification Text Input -->
+      <form id="form-notif-sim" novalidate>
+        <div class="form-group">
+          <label for="sim-source-select" class="form-label">Notification Source App / Bank</label>
+          <div class="input-wrapper">
+            <select id="sim-source-select" class="form-input form-select">
+              <option value="HDFC Bank">HDFC Bank</option>
+              <option value="State Bank of India (SBI)">State Bank of India (SBI)</option>
+              <option value="ICICI Bank">ICICI Bank</option>
+              <option value="Axis Bank">Axis Bank</option>
+              <option value="Google Pay">Google Pay</option>
+              <option value="PhonePe">PhonePe</option>
+              <option value="Paytm">Paytm</option>
+              <option value="CRED">CRED</option>
+              <option value="Custom Bank/UPI">Other Bank / UPI</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="sim-notif-text" class="form-label">Notification / SMS Text (Paste real text or edit above)</label>
+          <div class="input-wrapper">
+            <textarea id="sim-notif-text" class="form-input form-textarea" rows="3" placeholder="e.g. A/c XX4120 debited by Rs 350.00 at Starbucks Coffee via UPI..." required></textarea>
+          </div>
+          <span class="field-error-msg" id="sim-notif-error"></span>
+        </div>
+
+        <!-- Live Parser Preview Box -->
+        <div class="parser-live-preview" id="parser-live-preview">
+          <div class="preview-header">
+            <span class="preview-badge">⚡ Real-Time Regex Parser Output</span>
+            <span class="preview-status" id="parser-status-tag">Ready</span>
+          </div>
+          <div class="preview-details-grid" id="preview-details-grid">
+            <div><span class="prev-lbl">Type:</span> <strong id="prev-type">-</strong></div>
+            <div><span class="prev-lbl">Amount:</span> <strong id="prev-amount">-</strong></div>
+            <div><span class="prev-lbl">Merchant/Entity:</span> <strong id="prev-merchant">-</strong></div>
+            <div><span class="prev-lbl">Category:</span> <strong id="prev-cat">-</strong></div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="notif-sim-modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta" id="btn-fire-sim-notif">
+            <span class="btn-text">🚀 Trigger & Auto-Upgrade Ledger</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-stack" id="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

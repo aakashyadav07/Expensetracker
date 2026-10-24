@@ -1,0 +1,19 @@
+{
+  "name": "expense-tracker-pro",
+  "version": "4.0.0",
+  "description": "Smart Multi-Persona Finance, UPI Auto-Sync & Social P2P Khaata Tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "expense-tracker",
+    "pwa",
+    "upi",
+    "fintech",
+    "budget"
+  ],
+  "author": "",
+  "license": "MIT"
+}
