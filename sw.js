@@ -2,12 +2,12 @@
    EXPENSE TRACKER — SERVICE WORKER (PWA OFFLINE CAPABILITY & CACHING)
    ========================================================================== */
 
-const CACHE_NAME = 'expense-tracker-cache-v1';
+const CACHE_NAME = 'expense-tracker-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/styles.css',
-  '/app.js',
+  '/tracker.js',
   '/manifest.json'
 ];
 
