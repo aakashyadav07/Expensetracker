@@ -210,6 +210,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const bannerTitle = document.getElementById('banner-title');
   const bannerDesc = document.getElementById('banner-desc');
   const bannerStatChip = document.getElementById('banner-stat-chip');
+  // Monthly Budget Elements
+  const monthlyBudgetCard = document.getElementById('monthly-budget-card');
+  const btnBudgetAction = document.getElementById('btn-budget-action');
+  const btnBudgetRemove = document.getElementById('btn-budget-remove');
+  const budgetInputDrawer = document.getElementById('budget-input-drawer');
+  const budgetAmountInput = document.getElementById('budget-amount-input');
+  const btnBudgetSave = document.getElementById('btn-budget-save');
+  const btnBudgetCancel = document.getElementById('btn-budget-cancel');
+  const budgetInputError = document.getElementById('budget-input-error');
+  const budgetActiveContent = document.getElementById('budget-active-content');
+  const budgetEmptyState = document.getElementById('budget-empty-state');
+  const budgetValTotal = document.getElementById('budget-val-total');
+  const budgetValSpent = document.getElementById('budget-val-spent');
+  const budgetValRemaining = document.getElementById('budget-val-remaining');
+  const budgetProgressStatus = document.getElementById('budget-progress-status');
+  const budgetProgressPct = document.getElementById('budget-progress-pct');
+  const budgetProgressFill = document.getElementById('budget-progress-fill');
+
   const dashStatsContainer = document.getElementById('dash-stats-container');
   const dashToolContainer = document.getElementById('dash-tool-container');
   const dashboardTxList = document.getElementById('dashboard-tx-list');
@@ -670,7 +688,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function renderDashboard(user) {
+  
+  /* --------------------------------------------------------------------------
+     Allowance Cycle Engine (Default: Monthly 1st Reset / Custom Days)
+     -------------------------------------------------------------------------- */
+  function getAllowanceDaysLeft(user) {
+    const now = new Date();
+    if (user && user.allowanceCycle && user.allowanceCycle.mode === 'custom') {
+      if (user.allowanceCycle.targetDate) {
+        const msPerDay = 1000 * 60 * 60 * 24;
+        const remaining = Math.ceil((user.allowanceCycle.targetDate - now.getTime()) / msPerDay);
+        return Math.max(1, remaining);
+      }
+      return Math.max(1, Number(user.allowanceCycle.days) || 14);
+    }
+
+    // Default: cycle resets automatically on the 1st of every month
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const nextMonthFirst = new Date(currentYear, currentMonth + 1, 1);
+    const msPerDay = 1000 * 60 * 60 * 24;
+    return Math.max(1, Math.ceil((nextMonthFirst - now) / msPerDay));
+  }
+
+function renderDashboard(user) {
     const persona = user.persona || 'student';
     dashUserName.textContent = user.name;
     const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'ET';
@@ -692,7 +733,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (persona === 'student') {
       bannerTitle.textContent = '🎓 College Student Budget Hub';
       bannerDesc.textContent = 'Keep your pocket money in check, survive the semester, and split roommate bills in 1 click.';
-      bannerStatChip.textContent = '📅 14 Days Left Till Allowance';
+      const daysLeft = getAllowanceDaysLeft(user);
+      const isCustomCycle = user.allowanceCycle && user.allowanceCycle.mode === 'custom';
+      bannerStatChip.innerHTML = `📅 ${daysLeft} Days Left Till Allowance <span style="font-size:0.75rem; opacity:0.85; margin-left:4px;">✏️</span>`;
+      bannerStatChip.title = isCustomCycle
+        ? `Custom cycle: ${daysLeft} days remaining. Click to edit.`
+        : `Monthly cycle: resets on 1st (${daysLeft} days left). Click to edit.`;
+      bannerStatChip.style.cursor = 'pointer';
       btnAddTxText.textContent = '+ Add College Expense';
     } else if (persona === 'trader') {
       bannerTitle.textContent = '📈 Active Trader P&L Command Center';
@@ -721,8 +768,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const netBalance = totalInflow - totalOutflow;
 
+    // Render Manual Monthly Budget Card
+    renderMonthlyBudget(user, totalOutflow);
+
     // Render Metric Cards
-    renderPersonaMetrics(persona, netBalance, totalInflow, totalOutflow, txList);
+    renderPersonaMetrics(persona, netBalance, totalInflow, totalOutflow, txList, user);
 
     // Render Specialized Tool
     renderPersonaTool(persona, user, netBalance);
@@ -740,39 +790,297 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTransactionList(txList);
   }
 
-  /* Metric Cards */
-  function renderPersonaMetrics(persona, netBalance, totalInflow, totalOutflow, txList) {
+  /* Monthly Budget Renderer */
+  function renderMonthlyBudget(user, totalOutflow) {
+    if (!monthlyBudgetCard) return;
+
+    const budget = Number(user.monthlyBudget);
+    const hasBudget = !isNaN(budget) && budget > 0;
+
+    if (hasBudget) {
+      if (btnBudgetAction) {
+        btnBudgetAction.textContent = 'Edit Budget';
+        btnBudgetAction.className = 'btn-secondary sm-cta';
+      }
+      if (btnBudgetRemove) btnBudgetRemove.classList.remove('hidden');
+      if (budgetActiveContent) budgetActiveContent.classList.remove('hidden');
+      if (budgetEmptyState) budgetEmptyState.classList.add('hidden');
+
+      // Update figures
+      if (budgetValTotal) budgetValTotal.textContent = formatRupee(budget);
+      if (budgetValSpent) budgetValSpent.textContent = formatRupee(totalOutflow);
+
+      const remaining = budget - totalOutflow;
+      if (budgetValRemaining) {
+        if (remaining >= 0) {
+          budgetValRemaining.textContent = formatRupee(remaining);
+          budgetValRemaining.className = 'budget-metric-val income-val';
+        } else {
+          budgetValRemaining.textContent = '-' + formatRupee(Math.abs(remaining));
+          budgetValRemaining.className = 'budget-metric-val expense-val';
+        }
+      }
+
+      // Progress bar & colors: green normally (<80%), orange at 80% or more, red when over budget
+      const pct = (totalOutflow / budget) * 100;
+      const fillWidth = Math.min(Math.max(pct, 0), 100);
+
+      if (budgetProgressFill) {
+        budgetProgressFill.style.width = `${fillWidth}%`;
+        if (totalOutflow > budget) {
+          budgetProgressFill.className = 'budget-progress-fill bar-red';
+        } else if (pct >= 80) {
+          budgetProgressFill.className = 'budget-progress-fill bar-orange';
+        } else {
+          budgetProgressFill.className = 'budget-progress-fill bar-green';
+        }
+      }
+
+      if (budgetProgressPct) {
+        budgetProgressPct.textContent = `${pct.toFixed(0)}% Used`;
+      }
+
+      if (budgetProgressStatus) {
+        if (totalOutflow > budget) {
+          const overAmt = totalOutflow - budget;
+          budgetProgressStatus.textContent = `⚠️ Over Budget by ${formatRupee(overAmt)}`;
+          budgetProgressStatus.className = 'budget-progress-status status-red';
+        } else if (pct >= 80) {
+          const leftPct = Math.max(0, 100 - pct).toFixed(0);
+          budgetProgressStatus.textContent = `⚡ Approaching Limit (${leftPct}% Left)`;
+          budgetProgressStatus.className = 'budget-progress-status status-orange';
+        } else {
+          budgetProgressStatus.textContent = `✅ On Track`;
+          budgetProgressStatus.className = 'budget-progress-status status-green';
+        }
+      }
+    } else {
+      if (btnBudgetAction) {
+        btnBudgetAction.textContent = 'Set Budget';
+        btnBudgetAction.className = 'btn-primary-cta sm-cta';
+      }
+      if (btnBudgetRemove) btnBudgetRemove.classList.add('hidden');
+      if (budgetActiveContent) budgetActiveContent.classList.add('hidden');
+      if (budgetEmptyState && budgetInputDrawer && budgetInputDrawer.classList.contains('hidden')) {
+        budgetEmptyState.classList.remove('hidden');
+      }
+    }
+  }
+
+  /* Monthly Budget Event Listeners */
+  if (btnBudgetAction) {
+    btnBudgetAction.addEventListener('click', () => {
+      const activeEmail = localStorage.getItem(SESSION_KEY);
+      const user = activeEmail ? findUser(activeEmail) : null;
+      if (!user) return;
+
+      const isDrawerHidden = budgetInputDrawer.classList.contains('hidden');
+      if (isDrawerHidden) {
+        budgetInputDrawer.classList.remove('hidden');
+        if (budgetEmptyState) budgetEmptyState.classList.add('hidden');
+        if (budgetInputError) budgetInputError.classList.add('hidden');
+        if (budgetAmountInput) {
+          budgetAmountInput.value = (user.monthlyBudget && user.monthlyBudget > 0) ? user.monthlyBudget : '';
+          budgetAmountInput.focus();
+        }
+      } else {
+        budgetInputDrawer.classList.add('hidden');
+        if (!user.monthlyBudget && budgetEmptyState) {
+          budgetEmptyState.classList.remove('hidden');
+        }
+      }
+    });
+  }
+
+  if (btnBudgetCancel) {
+    btnBudgetCancel.addEventListener('click', () => {
+      const activeEmail = localStorage.getItem(SESSION_KEY);
+      const user = activeEmail ? findUser(activeEmail) : null;
+      if (budgetInputDrawer) budgetInputDrawer.classList.add('hidden');
+      if (budgetInputError) budgetInputError.classList.add('hidden');
+      if (user && !user.monthlyBudget && budgetEmptyState) {
+        budgetEmptyState.classList.remove('hidden');
+      }
+    });
+  }
+
+  function handleSaveMonthlyBudget() {
+    const activeEmail = localStorage.getItem(SESSION_KEY);
+    const user = activeEmail ? findUser(activeEmail) : null;
+    if (!user) return;
+
+    const rawVal = budgetAmountInput ? budgetAmountInput.value.trim() : '';
+    const val = parseFloat(rawVal);
+
+    if (isNaN(val) || val <= 0) {
+      if (budgetInputError) {
+        budgetInputError.textContent = 'Please enter a valid amount greater than ₹0.';
+        budgetInputError.classList.remove('hidden');
+      }
+      showToast('Invalid Amount', 'Budget amount must be greater than ₹0.', 'error');
+      if (budgetAmountInput) budgetAmountInput.focus();
+      return;
+    }
+
+    user.monthlyBudget = Math.round(val * 100) / 100;
+    updateUser(user);
+
+    if (budgetInputDrawer) budgetInputDrawer.classList.add('hidden');
+    if (budgetInputError) budgetInputError.classList.add('hidden');
+
+    renderDashboard(user);
+    showToast('Budget Saved', `Monthly budget of ${formatRupee(user.monthlyBudget)} saved successfully!`, 'success');
+  }
+
+  if (btnBudgetSave) {
+    btnBudgetSave.addEventListener('click', handleSaveMonthlyBudget);
+  }
+
+  if (budgetAmountInput) {
+    budgetAmountInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSaveMonthlyBudget();
+      }
+    });
+  }
+
+  if (btnBudgetRemove) {
+    btnBudgetRemove.addEventListener('click', () => {
+      const activeEmail = localStorage.getItem(SESSION_KEY);
+      const user = activeEmail ? findUser(activeEmail) : null;
+      if (!user) return;
+
+      delete user.monthlyBudget;
+      updateUser(user);
+
+      if (budgetInputDrawer) budgetInputDrawer.classList.add('hidden');
+      if (budgetInputError) budgetInputError.classList.add('hidden');
+
+      renderDashboard(user);
+      showToast('Budget Removed', 'Monthly budget removed.', 'info');
+    });
+  }
+
+  /* Metric Cards — Dynamic AI Financial Health & Real-time Spend Caps */
+  function renderPersonaMetrics(persona, netBalance, totalInflow, totalOutflow, txList, user) {
     dashStatsContainer.innerHTML = '';
+    const daysLeft = getAllowanceDaysLeft(user);
+
     if (persona === 'student') {
-      const daysLeft = 14;
-      const dailyLimit = netBalance > 0 ? Math.floor(netBalance / daysLeft) : 0;
+      // 1. Calculate Daily Spend Cap based on remaining monthly budget (if set) or net balance
+      const hasBudget = user && user.monthlyBudget && Number(user.monthlyBudget) > 0;
+      const budgetAmount = hasBudget ? Number(user.monthlyBudget) : 0;
+      const availableFunds = hasBudget ? (budgetAmount - totalOutflow) : netBalance;
+      const dailyLimit = availableFunds > 0 ? Math.floor(availableFunds / daysLeft) : 0;
+
+      // 2. Calculate Dynamic AI Financial Health Score (0 - 100) based on actual data
+      let healthScore = 85;
+      let healthBadgeText = '🛡️ Shield Active';
+      let healthColor = 'var(--brand-emerald-light)';
+      let healthBadgeBg = 'rgba(16, 185, 129, 0.15)';
+      let healthBadgeBorder = 'rgba(16, 185, 129, 0.3)';
+      let healthSubtext = `Burn velocity: ₹${dailyLimit.toLocaleString('en-IN')}/day safe margin`;
+
+      if (hasBudget) {
+        const spentPct = (totalOutflow / budgetAmount) * 100;
+        if (totalOutflow > budgetAmount) {
+          const overRatio = (totalOutflow - budgetAmount) / budgetAmount;
+          healthScore = Math.max(12, Math.round(45 - Math.min(30, overRatio * 50)));
+          healthBadgeText = '⚠️ Shield Breached';
+          healthColor = 'var(--brand-rose)';
+          healthBadgeBg = 'rgba(244, 63, 94, 0.15)';
+          healthBadgeBorder = 'rgba(244, 63, 94, 0.3)';
+          healthSubtext = `Over budget by ${formatRupee(totalOutflow - budgetAmount)} • 0 margin`;
+        } else if (spentPct >= 80) {
+          const cautionProgress = (spentPct - 80) / 20;
+          healthScore = Math.round(75 - cautionProgress * 25);
+          healthBadgeText = '⚡ Warning Margin';
+          healthColor = 'var(--brand-amber)';
+          healthBadgeBg = 'rgba(245, 158, 11, 0.15)';
+          healthBadgeBorder = 'rgba(245, 158, 11, 0.3)';
+          healthSubtext = `Approaching cap: ₹${dailyLimit.toLocaleString('en-IN')}/day remaining`;
+        } else {
+          const safeProgress = spentPct / 80;
+          healthScore = Math.round(98 - safeProgress * 20);
+          healthBadgeText = '🛡️ Shield Active';
+          healthColor = 'var(--brand-emerald-light)';
+          healthBadgeBg = 'rgba(16, 185, 129, 0.15)';
+          healthBadgeBorder = 'rgba(16, 185, 129, 0.3)';
+          healthSubtext = `Burn velocity: ₹${dailyLimit.toLocaleString('en-IN')}/day safe margin`;
+        }
+      } else {
+        if (totalInflow > 0) {
+          const expenseRatio = totalOutflow / totalInflow;
+          if (netBalance < 0) {
+            healthScore = Math.max(15, Math.round(40 - Math.min(25, (totalOutflow - totalInflow) / totalInflow * 30)));
+            healthBadgeText = '⚠️ Deficit Alert';
+            healthColor = 'var(--brand-rose)';
+            healthBadgeBg = 'rgba(244, 63, 94, 0.15)';
+            healthBadgeBorder = 'rgba(244, 63, 94, 0.3)';
+            healthSubtext = `Expenses exceed income by ${formatRupee(Math.abs(netBalance))}`;
+          } else if (expenseRatio >= 0.8) {
+            healthScore = Math.round(70 - (expenseRatio - 0.8) * 100);
+            healthBadgeText = '⚡ High Outflow';
+            healthColor = 'var(--brand-amber)';
+            healthBadgeBg = 'rgba(245, 158, 11, 0.15)';
+            healthBadgeBorder = 'rgba(245, 158, 11, 0.3)';
+            healthSubtext = `${(expenseRatio * 100).toFixed(0)}% of income spent • ₹${dailyLimit.toLocaleString('en-IN')}/day`;
+          } else {
+            healthScore = Math.min(99, Math.round(98 - expenseRatio * 25));
+            healthBadgeText = '🛡️ Shield Active';
+            healthColor = 'var(--brand-emerald-light)';
+            healthBadgeBg = 'rgba(16, 185, 129, 0.15)';
+            healthBadgeBorder = 'rgba(16, 185, 129, 0.3)';
+            healthSubtext = `Burn velocity: ₹${dailyLimit.toLocaleString('en-IN')}/day safe margin`;
+          }
+        } else if (totalOutflow > 0) {
+          healthScore = Math.max(25, Math.round(65 - Math.min(40, totalOutflow / 200)));
+          healthBadgeText = '⚡ Outflow Active';
+          healthColor = 'var(--brand-amber)';
+          healthBadgeBg = 'rgba(245, 158, 11, 0.15)';
+          healthBadgeBorder = 'rgba(245, 158, 11, 0.3)';
+          healthSubtext = `Total spends: ${formatRupee(totalOutflow)} • Add allowance`;
+        }
+      }
+
+      const limitDisplay = dailyLimit > 0
+        ? `₹${dailyLimit.toLocaleString('en-IN')} <span style="font-size:0.95rem;">/ day</span>`
+        : `₹0 <span style="font-size:0.95rem;">/ day</span>`;
+
+      const limitSubtext = availableFunds > 0
+        ? `Safe spending rate for ${daysLeft} days`
+        : `<span style="color:var(--brand-rose); font-weight:600;">Funds exhausted • Slow down spends</span>`;
+
       dashStatsContainer.innerHTML = `
         <div class="dash-stat-card">
-          <div class="stat-card-header"><span>Remaining Pocket Money</span><span class="badge-growth-sm">Allowance Mode</span></div>
-          <h2 class="stat-main-figure">${formatRupee(netBalance)}</h2>
-          <span class="stat-subtext">Total cash & UPI balance left</span>
+          <div class="stat-card-header">
+            <span>Daily Spend Cap</span>
+            <span class="badge-growth-sm" style="${availableFunds <= 0 ? 'background:rgba(244,63,94,0.15);color:var(--brand-rose);' : ''}">${availableFunds <= 0 ? 'Exhausted' : 'Target Limit'}</span>
+          </div>
+          <h3 class="stat-secondary-figure ${availableFunds > 0 ? 'neutral-val' : 'expense-val'}">${limitDisplay}</h3>
+          <span class="stat-subtext">${limitSubtext}</span>
         </div>
         <div class="dash-stat-card">
-          <div class="stat-card-header"><span>Daily Spend Cap</span><span class="badge-growth-sm">Target Limit</span></div>
-          <h3 class="stat-secondary-figure neutral-val">₹${dailyLimit} <span style="font-size:0.95rem;">/ day</span></h3>
-          <span class="stat-subtext">Safe spending rate for ${daysLeft} days</span>
-        </div>
-        <div class="dash-stat-card">
-          <div class="stat-card-header"><span>Spent This Month</span><span class="badge-warning-sm">Canteen & Living</span></div>
-          <h3 class="stat-secondary-figure expense-val">-${formatRupee(totalOutflow)}</h3>
-          <span class="stat-subtext">Hostel rent, mess & academics</span>
-        </div>
-        <div class="dash-stat-card">
-          <div class="stat-card-header"><span>AI Financial Health</span><span class="health-score-badge">🛡️ Shield Active</span></div>
-          <h2 class="stat-main-figure" style="color:var(--brand-emerald-light);">92<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
-          <span class="stat-subtext">Burn velocity: ₹${dailyLimit}/day safe margin</span>
-          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: 92%;"></div></div>
+          <div class="stat-card-header">
+            <span>AI Financial Health</span>
+            <span class="health-score-badge" style="background:${healthBadgeBg}; border-color:${healthBadgeBorder}; color:${healthColor};">${healthBadgeText}</span>
+          </div>
+          <h2 class="stat-main-figure" style="color:${healthColor};">${healthScore}<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
+          <span class="stat-subtext">${healthSubtext}</span>
+          <div class="health-gauge-track">
+            <div class="health-gauge-fill" style="width: ${healthScore}%; background: ${healthColor};"></div>
+          </div>
         </div>
       `;
     } else if (persona === 'trader') {
       const wins = txList.filter(t => t.type === 'income').length;
       const totalTrades = txList.length || 1;
       const winRate = ((wins / totalTrades) * 100).toFixed(1);
+      const traderScore = Math.min(99, Math.max(15, Math.round(Number(winRate) * 0.7 + (netBalance >= 0 ? 25 : -10))));
+      const traderColor = traderScore >= 75 ? 'var(--brand-emerald-light)' : (traderScore >= 50 ? 'var(--brand-amber)' : 'var(--brand-rose)');
+      const traderBadgeText = traderScore >= 75 ? '🛡️ Shield Active' : (traderScore >= 50 ? '⚡ Caution' : '⚠️ High Risk');
+
       dashStatsContainer.innerHTML = `
         <div class="dash-stat-card">
           <div class="stat-card-header"><span>Net Realized P&L</span><span class="badge-growth-sm">${netBalance >= 0 ? '+ROI' : '-Loss'}</span></div>
@@ -790,14 +1098,19 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="stat-subtext">Deployed capital: ₹2,45,000</span>
         </div>
         <div class="dash-stat-card">
-          <div class="stat-card-header"><span>AI Risk Discipline</span><span class="health-score-badge">🛡️ Shield Active</span></div>
-          <h2 class="stat-main-figure" style="color:var(--brand-emerald-light);">88<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
+          <div class="stat-card-header"><span>AI Risk Discipline</span><span class="health-score-badge" style="color:${traderColor};">${traderBadgeText}</span></div>
+          <h2 class="stat-main-figure" style="color:${traderColor};">${traderScore}<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
           <span class="stat-subtext">Controlled drawdown • ${winRate}% accuracy</span>
-          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: 88%;"></div></div>
+          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: ${traderScore}%; background:${traderColor};"></div></div>
         </div>
       `;
     } else if (persona === 'business') {
       const estimatedGst = (totalInflow * 0.18).toFixed(2);
+      const runwayMonths = totalOutflow > 0 ? (netBalance / (totalOutflow || 1)).toFixed(1) : '6.0';
+      const bizScore = Math.min(99, Math.max(20, Math.round(Math.min(50, Number(runwayMonths) * 10) + (netBalance >= Number(estimatedGst) ? 45 : 15))));
+      const bizColor = bizScore >= 75 ? 'var(--brand-emerald-light)' : (bizScore >= 50 ? 'var(--brand-amber)' : 'var(--brand-rose)');
+      const bizBadgeText = bizScore >= 75 ? '🛡️ Shield Active' : (bizScore >= 50 ? '⚡ Tight Runway' : '⚠️ Low Buffer');
+
       dashStatsContainer.innerHTML = `
         <div class="dash-stat-card">
           <div class="stat-card-header"><span>Net Business Cashflow</span><span class="badge-growth-sm">Liquid Reserve</span></div>
@@ -815,14 +1128,19 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="stat-subtext">Set aside for GSTR-3B</span>
         </div>
         <div class="dash-stat-card">
-          <div class="stat-card-header"><span>AI Cashflow Buffer</span><span class="health-score-badge">🛡️ Shield Active</span></div>
-          <h2 class="stat-main-figure" style="color:var(--brand-emerald-light);">86<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
-          <span class="stat-subtext">Runway: ~4.2 mo • GST provision covered</span>
-          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: 86%;"></div></div>
+          <div class="stat-card-header"><span>AI Cashflow Buffer</span><span class="health-score-badge" style="color:${bizColor};">${bizBadgeText}</span></div>
+          <h2 class="stat-main-figure" style="color:${bizColor};">${bizScore}<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
+          <span class="stat-subtext">Runway: ~${runwayMonths} mo • GST provision covered</span>
+          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: ${bizScore}%; background:${bizColor};"></div></div>
         </div>
       `;
     } else {
       const savingsRate = totalInflow > 0 ? ((netBalance / totalInflow) * 100).toFixed(0) : 0;
+      const savingsRateNum = Number(savingsRate);
+      const salariedScore = Math.min(99, Math.max(20, Math.round(Math.min(50, savingsRateNum * 1.5) + (netBalance >= 0 ? 45 : 10))));
+      const salariedColor = salariedScore >= 75 ? 'var(--brand-emerald-light)' : (salariedScore >= 50 ? 'var(--brand-amber)' : 'var(--brand-rose)');
+      const salariedBadgeText = salariedScore >= 75 ? '🛡️ Shield Active' : (salariedScore >= 50 ? '⚡ Moderate' : '⚠️ Low Savings');
+
       dashStatsContainer.innerHTML = `
         <div class="dash-stat-card">
           <div class="stat-card-header"><span>Net Savings Balance</span><span class="badge-growth-sm">${savingsRate}% Rate</span></div>
@@ -835,15 +1153,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="stat-subtext">Corporate employment deposit</span>
         </div>
         <div class="dash-stat-card">
-          <div class="stat-card-header"><span>Living Outflow</span><span class="badge-warning-sm">Expenses</span></div>
-          <h3 class="stat-secondary-figure expense-val">-${formatRupee(totalOutflow)}</h3>
-          <span class="stat-subtext">EMI, Rent, SIP & Utilities</span>
+          <div class="stat-card-header"><span>50/30/20 Rule Adherence</span><span class="badge-growth-sm">Harvard Model</span></div>
+          <h3 class="stat-secondary-figure neutral-val">On Track</h3>
+          <span class="stat-subtext">50% Needs, 30% Wants, 20% SIP</span>
         </div>
         <div class="dash-stat-card">
-          <div class="stat-card-header"><span>AI Wealth Score</span><span class="health-score-badge">🛡️ Shield Active</span></div>
-          <h2 class="stat-main-figure" style="color:var(--brand-emerald-light);">91<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
-          <span class="stat-subtext">50/30/20 target met • ${savingsRate}% savings</span>
-          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: 91%;"></div></div>
+          <div class="stat-card-header"><span>AI Wealth Health</span><span class="health-score-badge" style="color:${salariedColor};">${salariedBadgeText}</span></div>
+          <h2 class="stat-main-figure" style="color:${salariedColor};">${salariedScore}<span style="font-size:1rem; color:var(--text-muted); font-weight:500;">/100</span></h2>
+          <span class="stat-subtext">${savingsRate}% savings rate • Retained capital</span>
+          <div class="health-gauge-track"><div class="health-gauge-fill" style="width: ${salariedScore}%; background:${salariedColor};"></div></div>
         </div>
       `;
     }
@@ -2453,5 +2771,122 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAndroidModalBackSupport();
   handleAndroidAppShortcuts();
   setupAndroidBottomNav();
+
+  /* --------------------------------------------------------------------------
+     Allowance Cycle Modal Listeners
+     -------------------------------------------------------------------------- */
+  const allowanceModal = document.getElementById('allowance-cycle-modal');
+  const allowanceModalClose = document.getElementById('allowance-modal-close');
+  const allowanceModalCancel = document.getElementById('allowance-modal-cancel');
+  const formAllowanceCycle = document.getElementById('form-allowance-cycle');
+  const btnCycleModeDefault = document.getElementById('btn-cycle-mode-default');
+  const btnCycleModeCustom = document.getElementById('btn-cycle-mode-custom');
+  const groupCustomDays = document.getElementById('group-custom-days');
+  const groupDefaultInfo = document.getElementById('group-default-info');
+  const inputCustomDays = document.getElementById('input-custom-days');
+  const cycleDefaultPreview = document.getElementById('cycle-default-preview');
+  const customDaysError = document.getElementById('custom-days-error');
+  let currentCycleMode = 'default';
+
+  function openAllowanceCycleModal() {
+    const activeEmail = localStorage.getItem(SESSION_KEY);
+    const user = activeEmail ? findUser(activeEmail) : null;
+    if (!user || user.persona !== 'student') return;
+
+    const defaultDays = getAllowanceDaysLeft({ allowanceCycle: { mode: 'default' } });
+    if (cycleDefaultPreview) {
+      const now = new Date();
+      const nextMonthName = new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleString('default', { month: 'short' });
+      cycleDefaultPreview.textContent = `${defaultDays} Days Remaining (Resets ${nextMonthName} 1st)`;
+    }
+
+    if (user.allowanceCycle && user.allowanceCycle.mode === 'custom') {
+      currentCycleMode = 'custom';
+      btnCycleModeCustom.classList.add('active');
+      btnCycleModeDefault.classList.remove('active');
+      groupCustomDays.style.display = 'block';
+      groupDefaultInfo.style.display = 'none';
+      if (inputCustomDays) inputCustomDays.value = getAllowanceDaysLeft(user);
+    } else {
+      currentCycleMode = 'default';
+      btnCycleModeDefault.classList.add('active');
+      btnCycleModeCustom.classList.remove('active');
+      groupCustomDays.style.display = 'none';
+      groupDefaultInfo.style.display = 'block';
+    }
+
+    if (customDaysError) customDaysError.textContent = '';
+    allowanceModal.classList.remove('hidden');
+  }
+
+  if (bannerStatChip) {
+    bannerStatChip.addEventListener('click', () => {
+      const activeEmail = localStorage.getItem(SESSION_KEY);
+      const user = activeEmail ? findUser(activeEmail) : null;
+      if (user && user.persona === 'student') {
+        openAllowanceCycleModal();
+      }
+    });
+  }
+
+  if (btnCycleModeDefault) {
+    btnCycleModeDefault.addEventListener('click', () => {
+      currentCycleMode = 'default';
+      btnCycleModeDefault.classList.add('active');
+      btnCycleModeCustom.classList.remove('active');
+      groupCustomDays.style.display = 'none';
+      groupDefaultInfo.style.display = 'block';
+      if (customDaysError) customDaysError.textContent = '';
+    });
+  }
+
+  if (btnCycleModeCustom) {
+    btnCycleModeCustom.addEventListener('click', () => {
+      currentCycleMode = 'custom';
+      btnCycleModeCustom.classList.add('active');
+      btnCycleModeDefault.classList.remove('active');
+      groupCustomDays.style.display = 'block';
+      groupDefaultInfo.style.display = 'none';
+      if (inputCustomDays) inputCustomDays.focus();
+    });
+  }
+
+  if (allowanceModalClose) allowanceModalClose.addEventListener('click', () => allowanceModal.classList.add('hidden'));
+  if (allowanceModalCancel) allowanceModalCancel.addEventListener('click', () => allowanceModal.classList.add('hidden'));
+
+  if (formAllowanceCycle) {
+    formAllowanceCycle.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const activeEmail = localStorage.getItem(SESSION_KEY);
+      const user = activeEmail ? findUser(activeEmail) : null;
+      if (!user) return;
+
+      if (currentCycleMode === 'custom') {
+        const days = parseInt(inputCustomDays.value, 10);
+        if (isNaN(days) || days <= 0 || days > 365) {
+          if (customDaysError) customDaysError.textContent = 'Please enter a valid number of days (1 to 365).';
+          return;
+        }
+        const msPerDay = 1000 * 60 * 60 * 24;
+        user.allowanceCycle = {
+          mode: 'custom',
+          days: days,
+          targetDate: Date.now() + (days * msPerDay)
+        };
+        updateUser(user);
+        allowanceModal.classList.add('hidden');
+        renderDashboard(user);
+        showToast('Allowance Cycle Updated', `Custom cycle set: ${days} days left till allowance.`, 'success');
+      } else {
+        user.allowanceCycle = { mode: 'default' };
+        updateUser(user);
+        allowanceModal.classList.add('hidden');
+        renderDashboard(user);
+        const days = getAllowanceDaysLeft(user);
+        showToast('Cycle Reset to 1st', `Default monthly cycle active (${days} days left till 1st of month).`, 'info');
+      }
+    });
+  }
+
 });
 

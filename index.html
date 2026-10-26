@@ -577,6 +577,71 @@
         <div class="persona-banner-badge" id="banner-stat-chip">14 Days Left in Month</div>
       </div>
 
+      <!-- Manual Monthly Budget Option -->
+      <section class="monthly-budget-card" id="monthly-budget-card">
+        <div class="budget-card-header">
+          <div class="budget-title-group">
+            <span class="budget-card-icon">🎯</span>
+            <div>
+              <h3 class="budget-card-title">My Monthly Budget</h3>
+              <p class="budget-card-subtitle" id="budget-card-subtitle">Set and track your monthly spending limit</p>
+            </div>
+          </div>
+          <div class="budget-header-actions" id="budget-header-actions">
+            <button type="button" class="btn-primary-cta sm-cta" id="btn-budget-action">Set Budget</button>
+            <button type="button" class="btn-budget-remove sm-cta hidden" id="btn-budget-remove">Remove</button>
+          </div>
+        </div>
+
+        <!-- Inline Budget Input Drawer -->
+        <div class="budget-input-drawer hidden" id="budget-input-drawer">
+          <div class="budget-input-row">
+            <div class="input-wrapper budget-input-wrapper">
+              <span class="input-icon">₹</span>
+              <input type="number" id="budget-amount-input" class="form-input" placeholder="Enter amount in ₹ (e.g. 15000)" min="1" step="any" aria-label="Monthly budget amount in rupees">
+            </div>
+            <div class="budget-drawer-actions">
+              <button type="button" class="btn-primary-cta sm-cta" id="btn-budget-save">Save</button>
+              <button type="button" class="btn-secondary sm-cta" id="btn-budget-cancel">Cancel</button>
+            </div>
+          </div>
+          <p class="budget-input-error hidden" id="budget-input-error">Please enter a valid amount greater than ₹0.</p>
+        </div>
+
+        <!-- Budget Active Metrics & Progress Bar -->
+        <div class="budget-active-content hidden" id="budget-active-content">
+          <div class="budget-metrics-row">
+            <div class="budget-metric-item">
+              <span class="budget-metric-label">Budget</span>
+              <span class="budget-metric-val" id="budget-val-total">₹0.00</span>
+            </div>
+            <div class="budget-metric-item">
+              <span class="budget-metric-label">Spent</span>
+              <span class="budget-metric-val expense-val" id="budget-val-spent">₹0.00</span>
+            </div>
+            <div class="budget-metric-item">
+              <span class="budget-metric-label">Remaining</span>
+              <span class="budget-metric-val" id="budget-val-remaining">₹0.00</span>
+            </div>
+          </div>
+
+          <div class="budget-progress-section">
+            <div class="budget-progress-info">
+              <span class="budget-progress-status" id="budget-progress-status">✅ On Track</span>
+              <span class="budget-progress-pct" id="budget-progress-pct">0% Used</span>
+            </div>
+            <div class="budget-progress-track">
+              <div class="budget-progress-fill bar-green" id="budget-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="budget-empty-state" id="budget-empty-state">
+          <p class="budget-empty-text">No monthly budget set. Click <strong>"Set Budget"</strong> to define your spending limit and keep expenses on track.</p>
+        </div>
+      </section>
+
       <!-- Dynamic Metric Cards + AI Financial Health Score -->
       <section class="dash-stats-grid" id="dash-stats-container">
         <!-- Rendered by app.js -->
@@ -1537,6 +1602,54 @@
           <button type="submit" class="btn-primary-cta" id="btn-fire-sim-notif">
             <span class="btn-text">🚀 Trigger & Auto-Upgrade Ledger</span>
           </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Allowance Cycle Configuration Modal -->
+  <div class="modal-backdrop hidden" id="allowance-cycle-modal">
+    <div class="modal-box">
+      <button type="button" class="modal-close-btn" id="allowance-modal-close" aria-label="Close dialog">&times;</button>
+      <div class="modal-icon-header" style="background: rgba(99, 102, 241, 0.18); color: #818cf8;">
+        <span style="font-size: 1.5rem;">📅</span>
+      </div>
+      <h3 class="modal-title">Edit Allowance Cycle</h3>
+      <p class="modal-desc">
+        Customize how many days remain in your allowance cycle, or use the automatic monthly reset.
+      </p>
+
+      <form id="form-allowance-cycle" novalidate>
+        <div class="form-group">
+          <label class="form-label">Cycle Mode</label>
+          <div class="tx-type-toggle" style="margin-bottom: 0.75rem;">
+            <button type="button" class="tx-toggle-btn active" id="btn-cycle-mode-default">🗓️ 1st of Month (Default)</button>
+            <button type="button" class="tx-toggle-btn" id="btn-cycle-mode-custom">✏️ Custom Days</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="group-custom-days" style="display: none;">
+          <label for="input-custom-days" class="form-label">Days Left Till Allowance</label>
+          <div class="input-wrapper">
+            <span class="input-icon">⏳</span>
+            <input type="number" id="input-custom-days" class="form-input" placeholder="e.g. 14" min="1" max="90" value="14">
+          </div>
+          <span class="field-error-msg" id="custom-days-error"></span>
+        </div>
+
+        <div class="form-group" id="group-default-info">
+          <div class="tool-output-box" style="margin-top: 0;">
+            <span class="tool-output-label">Automatic Monthly Cycle</span>
+            <span class="tool-output-val" id="cycle-default-preview">5 Days Remaining</span>
+          </div>
+          <p class="stat-subtext" style="margin-top: 0.4rem; font-size: 0.8rem;">
+            Automatically calculates days remaining and resets on the 1st of every month.
+          </p>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.25rem;">
+          <button type="button" class="btn-secondary" id="allowance-modal-cancel">Cancel</button>
+          <button type="submit" class="btn-primary-cta sm-cta" id="allowance-modal-save">Save Cycle</button>
         </div>
       </form>
     </div>

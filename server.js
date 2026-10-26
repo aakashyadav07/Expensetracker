@@ -11,7 +11,7 @@ const MIME_TYPES = {
   '.json': 'application/json'
 };
 
-const server = http.createServer((req, res) => {
+function handleRequest(req, res) {
   let reqPath = req.url === '/' ? '/index.html' : req.url.split('?')[0];
   const filePath = path.join(__dirname, reqPath);
   const ext = path.extname(filePath).toLowerCase();
@@ -20,8 +20,15 @@ const server = http.createServer((req, res) => {
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('404 Not Found');
+        fs.readFile(path.join(__dirname, 'index.html'), (err2, indexContent) => {
+          if (err2) {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('404 Not Found');
+          } else {
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(indexContent);
+          }
+        });
       } else {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('500 Server Error: ' + err.code);
@@ -31,8 +38,14 @@ const server = http.createServer((req, res) => {
       res.end(content);
     }
   });
-});
+}
 
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
-});
+const server = http.createServer(handleRequest);
+
+if (require.main === module) {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running at http://localhost:${PORT}/`);
+  });
+}
+
+module.exports = handleRequest;
